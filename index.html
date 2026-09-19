@@ -1,0 +1,2606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ADX | MODZ</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+
+<style>
+    /* ============================================
+       ROOT VARIABLES & RESET
+    ============================================ */
+    :root {
+        --bg-primary: #08090d;
+        --bg-secondary: #0e1016;
+        --bg-card: #141820;
+        --bg-card-hover: #1a1f2a;
+        --bg-input: #0c0f15;
+        --border-color: #252b3a;
+        --border-light: #333a4d;
+        --text-primary: #eef2f8;
+        --text-secondary: #8892a8;
+        --text-muted: #4a5266;
+        --accent-blue: #4f8cff;
+        --accent-cyan: #00d4ff;
+        --accent-purple: #8b5cf6;
+        --accent-pink: #ec4899;
+        --accent-gold: #fbbf24;
+        --accent-green: #34d399;
+        --accent-red: #f87171;
+        --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+        --shadow-glow: 0 0 40px rgba(79, 140, 255, 0.15);
+        --radius: 16px;
+        --radius-sm: 10px;
+        --radius-lg: 24px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --security-bg: rgba(0,0,0,0.92);
+        --security-border: rgba(79,140,255,0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        min-height: 100dvh;
+        -webkit-font-smoothing: antialiased;
+        scroll-behavior: smooth;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; border: none; }
+    input, select, textarea {
+        font-family: inherit;
+        outline: none;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+    .hidden { display: none !important; }
+
+    /* ============================================
+       LOADER
+    ============================================ */
+    #loader {
+        position: fixed;
+        inset: 0;
+        background: var(--bg-primary);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+    }
+    #loader .spinner-ring {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 3px solid var(--border-color);
+        border-top-color: var(--accent-blue);
+        animation: spin 0.8s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+        box-shadow: 0 0 30px rgba(79, 140, 255, 0.1);
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    #loader .loader-text {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-secondary);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+    #loader .loader-dots {
+        display: flex;
+        gap: 8px;
+    }
+    #loader .loader-dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-blue);
+        animation: dotPulse 1.4s ease-in-out infinite;
+    }
+    #loader .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    #loader .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+        0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ============================================
+       SECURITY OVERLAY - ENHANCED
+    ============================================ */
+    #security-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--security-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 99998;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 24px;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+        opacity: 0;
+        visibility: hidden;
+        padding: 24px;
+    }
+    #security-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    #security-overlay .shield-icon {
+        font-size: 64px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.1); opacity: 1; }
+    }
+    #security-overlay .security-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    #security-overlay .security-progress {
+        width: 200px;
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    #security-overlay .security-progress .bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    #security-overlay .security-status {
+        font-size: 14px;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+    #security-overlay .security-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    #security-overlay .security-dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border-color);
+        transition: background 0.3s ease;
+    }
+    #security-overlay .security-dots span.active {
+        background: var(--accent-blue);
+        box-shadow: 0 0 12px rgba(79, 140, 255, 0.4);
+    }
+    #security-overlay .security-dots span.done {
+        background: var(--accent-green);
+        box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
+    }
+    #security-overlay .security-checkmark {
+        font-size: 48px;
+        color: var(--accent-green);
+        display: none;
+        animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    /* ============================================
+       TOAST
+    ============================================ */
+    #toast-container {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 90%;
+        max-width: 440px;
+        pointer-events: none;
+    }
+    .toast {
+        padding: 16px 20px;
+        border-radius: var(--radius-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        pointer-events: auto;
+        animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: var(--shadow-card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+    .toast.success { border-left: 4px solid var(--accent-green); }
+    .toast.error { border-left: 4px solid var(--accent-red); }
+    .toast.warning { border-left: 4px solid var(--accent-gold); }
+    .toast i { font-size: 18px; }
+    .toast.success i { color: var(--accent-green); }
+    .toast.error i { color: var(--accent-red); }
+    .toast.warning i { color: var(--accent-gold); }
+    @keyframes toastIn {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ============================================
+       AUTH SCREEN - MODERN & CLEAN
+    ============================================ */
+    #auth-screen {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--bg-primary);
+        position: relative;
+        overflow: hidden;
+    }
+    #auth-screen::before {
+        content: '';
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(79, 140, 255, 0.06), transparent 70%);
+        top: -200px;
+        right: -200px;
+        pointer-events: none;
+    }
+    #auth-screen::after {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.05), transparent 70%);
+        bottom: -200px;
+        left: -200px;
+        pointer-events: none;
+    }
+    .auth-container {
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        z-index: 1;
+    }
+    .auth-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 44px 36px 36px;
+        box-shadow: var(--shadow-card);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+        opacity: 0.6;
+    }
+    .auth-card:hover { border-color: var(--border-light); }
+    .auth-card .brand {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+    .auth-card .brand .logo-icon {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-size: 24px;
+        font-weight: 900;
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(79, 140, 255, 0.3);
+    }
+    .auth-card .brand h1 {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .auth-card .brand h1 span { 
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .auth-card .brand p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-top: 4px;
+        font-weight: 400;
+    }
+    .auth-card .input-group {
+        margin-bottom: 16px;
+        position: relative;
+    }
+    .auth-card .input-group .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 15px;
+        transition: var(--transition);
+        pointer-events: none;
+    }
+    .auth-card .input-group input {
+        width: 100%;
+        padding: 14px 18px 14px 44px;
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        transition: var(--transition);
+        color: var(--text-primary);
+    }
+    .auth-card .input-group input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.08);
+    }
+    .auth-card .input-group input:focus + .input-icon,
+    .auth-card .input-group input:focus ~ .input-icon {
+        color: var(--accent-blue);
+    }
+    .auth-card .input-group input::placeholder { color: var(--text-muted); }
+
+    .btn-auth {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 15px;
+        color: #fff;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 4px;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-auth::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+        opacity: 0;
+        transition: var(--transition);
+    }
+    .btn-auth:hover::before { opacity: 1; }
+    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79, 140, 255, 0.3); }
+    .btn-auth:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-auth span { position: relative; z-index: 1; }
+    .btn-auth i { position: relative; z-index: 1; }
+
+    .auth-toggle {
+        margin-top: 20px;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+    .auth-toggle span {
+        color: var(--accent-blue);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .auth-toggle span:hover { color: var(--accent-purple); }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 24px 0 16px;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-color);
+    }
+
+    .social-row {
+        display: flex;
+        gap: 10px;
+    }
+    .social-row .social-btn {
+        flex: 1;
+        padding: 12px;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: transparent;
+        color: var(--text-secondary);
+        font-weight: 500;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+    .social-row .social-btn:hover {
+        border-color: var(--border-light);
+        color: var(--text-primary);
+        background: var(--bg-input);
+    }
+    .social-row .social-btn.wa:hover { border-color: #25D366; color: #25D366; }
+    .social-row .social-btn.tg:hover { border-color: #0088cc; color: #0088cc; }
+
+    /* ============================================
+       MAIN APP
+    ============================================ */
+    #main-app { display: none; }
+
+    /* NAVBAR - Sleek & Modern */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 72px;
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(8, 9, 13, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border-color);
+        z-index: 1000;
+        transition: var(--transition);
+    }
+    .navbar .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 20px;
+        letter-spacing: -0.5px;
+    }
+    .navbar .brand .brand-icon {
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #fff;
+        font-weight: 900;
+    }
+    .navbar .brand span { 
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .navbar .brand img { height: 32px; border-radius: 6px; }
+    .navbar .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .navbar .balance-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        background: rgba(79, 140, 255, 0.08);
+        border: 1px solid rgba(79, 140, 255, 0.15);
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--accent-blue);
+        transition: var(--transition);
+    }
+    .navbar .balance-pill:hover { border-color: rgba(79, 140, 255, 0.3); }
+    .navbar .balance-pill i { font-size: 14px; }
+    .navbar .menu-btn {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 18px;
+        transition: var(--transition);
+    }
+    .navbar .menu-btn:hover { border-color: var(--border-light); background: var(--bg-card-hover); }
+
+    /* DROPDOWN */
+    .dropdown {
+        position: absolute;
+        top: 80px;
+        right: 28px;
+        width: 230px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 8px;
+        box-shadow: var(--shadow-card);
+        transform-origin: top right;
+        transform: scale(0.95);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+        z-index: 999;
+    }
+    .dropdown.active {
+        transform: scale(1);
+        opacity: 1;
+        visibility: visible;
+    }
+    .dropdown-item {
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    .dropdown-item:hover {
+        background: var(--bg-input);
+        color: var(--text-primary);
+    }
+    .dropdown-item i { width: 20px; font-size: 15px; color: var(--text-muted); }
+    .dropdown-item:hover i { color: var(--accent-blue); }
+    .dropdown-item.danger { color: var(--accent-red); }
+    .dropdown-item.danger:hover { background: rgba(248, 113, 113, 0.08); }
+    .dropdown-item.danger i { color: var(--accent-red); }
+    .dropdown-divider {
+        height: 1px;
+        background: var(--border-color);
+        margin: 6px 0;
+    }
+
+    /* ============================================
+       PAGE CONTENT
+    ============================================ */
+    .page-content {
+        padding: 92px 28px 80px;
+        max-width: 1200px;
+        margin: 0 auto;
+        animation: fadeUp 0.5s ease;
+    }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    .page-title {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .page-title span { 
+        background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .search-box {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 380px;
+    }
+    .search-box input {
+        width: 100%;
+        padding: 12px 18px 12px 44px;
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-color);
+        border-radius: 30px;
+        font-size: 14px;
+        transition: var(--transition);
+        color: var(--text-primary);
+    }
+    .search-box input:focus {
+        border-color: var(--accent-purple);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.06);
+    }
+    .search-box input::placeholder { color: var(--text-muted); }
+    .search-box .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 16px;
+        pointer-events: none;
+    }
+    .search-box .search-spinner {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent-purple);
+        display: none;
+        animation: spin 0.8s linear infinite;
+    }
+
+    /* ============================================
+       PROMO SLIDER
+    ============================================ */
+    .promo-slider {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        margin-bottom: 32px;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .promo-slider::-webkit-scrollbar { display: none; }
+    .promo-slider .promo-card {
+        flex: 0 0 280px;
+        height: 160px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        scroll-snap-align: start;
+        cursor: pointer;
+        position: relative;
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+        background: var(--bg-card);
+    }
+    .promo-slider .promo-card:hover {
+        transform: scale(1.02);
+        border-color: var(--border-light);
+    }
+    .promo-slider .promo-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .promo-slider .promo-card .promo-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 24px 16px 14px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    }
+    .promo-slider .promo-card .promo-overlay .promo-title {
+        font-weight: 700;
+        font-size: 15px;
+        color: #fff;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    @media (min-width: 768px) {
+        .promo-slider .promo-card { flex: 0 0 320px; height: 180px; }
+    }
+
+    /* ============================================
+       PANEL GRID
+    ============================================ */
+    .panel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+    }
+    .panel-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-card:hover {
+        border-color: var(--border-light);
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-card), var(--shadow-glow);
+    }
+    .panel-card .video-wrap {
+        position: relative;
+        padding-bottom: 56.25%;
+        background: var(--bg-input);
+        overflow: hidden;
+    }
+    .panel-card .video-wrap iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    .panel-card .panel-body {
+        padding: 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .panel-card .panel-body .panel-name {
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
+    .panel-card .panel-body .feature-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .panel-card .panel-body .feature-list .chip {
+        padding: 4px 14px;
+        background: rgba(79, 140, 255, 0.08);
+        border: 1px solid rgba(79, 140, 255, 0.12);
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--accent-blue);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .panel-card .panel-body .feature-list .chip i { font-size: 10px; }
+    .panel-card .panel-body .trust-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 6px 0;
+    }
+    .panel-card .panel-body .trust-row .trust-item {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--accent-green);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .panel-card .panel-body .btn-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .btn-outline {
+        padding: 8px 16px;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: transparent;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 12px;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: center;
+        min-width: 80px;
+        cursor: pointer;
+    }
+    .btn-outline:hover {
+        border-color: var(--border-light);
+        color: var(--text-primary);
+        background: var(--bg-input);
+    }
+    .btn-outline.feedback { border-color: rgba(248, 113, 113, 0.25); color: var(--accent-red); }
+    .btn-outline.feedback:hover { border-color: var(--accent-red); background: rgba(248, 113, 113, 0.06); }
+
+    .btn-primary-solid {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 14px;
+        color: #fff;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        margin-top: 4px;
+        cursor: pointer;
+    }
+    .btn-primary-solid:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(79, 140, 255, 0.3);
+    }
+    .btn-primary-solid:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .panel-card .plan-select {
+        width: 100%;
+        padding: 10px 16px;
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    .panel-card .plan-select:focus { border-color: var(--accent-purple); }
+    .panel-card .plan-select option { background: var(--bg-card); }
+
+    /* ============================================
+       WALLET - Modern Dashboard
+    ============================================ */
+    .wallet-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    .wallet-stat {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: var(--transition);
+    }
+    .wallet-stat:hover { border-color: var(--border-light); }
+    .wallet-stat .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+    .wallet-stat .stat-icon.blue { background: rgba(79, 140, 255, 0.1); color: var(--accent-blue); }
+    .wallet-stat .stat-icon.green { background: rgba(52, 211, 153, 0.1); color: var(--accent-green); }
+    .wallet-stat .stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); }
+    .wallet-stat .stat-icon.gold { background: rgba(251, 191, 36, 0.1); color: var(--accent-gold); }
+    .wallet-stat .stat-info h4 {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    .wallet-stat .stat-info h2 {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
+
+    .wallet-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .wallet-tabs::-webkit-scrollbar { display: none; }
+    .wallet-tab {
+        padding: 10px 22px;
+        border: 1.5px solid var(--border-color);
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: var(--transition);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .wallet-tab:hover { border-color: var(--border-light); color: var(--text-primary); }
+    .wallet-tab.active {
+        background: var(--accent-blue);
+        color: #fff;
+        border-color: var(--accent-blue);
+    }
+    .wallet-tab.crypto.active {
+        background: var(--accent-gold);
+        color: #000;
+        border-color: var(--accent-gold);
+    }
+    .wallet-tab.manual.active {
+        background: var(--accent-purple);
+        color: #fff;
+        border-color: var(--accent-purple);
+    }
+    .wallet-tab.support.active {
+        background: var(--accent-green);
+        color: #000;
+        border-color: var(--accent-green);
+    }
+
+    .wallet-section { animation: fadeUp 0.3s ease; }
+
+    .premium-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        max-width: 560px;
+        margin: 0 auto;
+        transition: var(--transition);
+    }
+    .premium-card:hover { border-color: var(--border-light); }
+    .premium-card .card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .premium-card .card-head h3 {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
+    .premium-card .card-head i {
+        font-size: 28px;
+        color: var(--accent-blue);
+    }
+    .premium-card .card-desc {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 24px;
+    }
+    .premium-card .input-group { margin-bottom: 16px; }
+    .premium-card .input-group input {
+        width: 100%;
+        padding: 14px 18px;
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        transition: var(--transition);
+        color: var(--text-primary);
+    }
+    .premium-card .input-group input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.06);
+    }
+    .premium-card .input-group input::placeholder { color: var(--text-muted); }
+
+    .qr-display {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 20px;
+        background: var(--bg-input);
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        transition: var(--transition);
+    }
+    .qr-display img { width: 100%; height: 100%; object-fit: contain; border-radius: var(--radius-sm); }
+    .qr-display.crypto { border-color: rgba(251, 191, 36, 0.25); }
+    .qr-display.manual { border-color: rgba(139, 92, 246, 0.25); }
+
+    .copy-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 18px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+    .copy-row .copy-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 2px;
+    }
+    .copy-row .copy-value {
+        font-size: 14px;
+        font-weight: 600;
+        word-break: break-all;
+    }
+    .copy-row .copy-btn {
+        padding: 6px 18px;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: transparent;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 12px;
+        transition: var(--transition);
+        flex-shrink: 0;
+        cursor: pointer;
+    }
+    .copy-row .copy-btn:hover {
+        border-color: var(--border-light);
+        color: var(--text-primary);
+    }
+
+    .status-grid {
+        margin-top: 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+    }
+    .status-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+    }
+    .status-row:last-child { border-bottom: none; }
+    .status-row .label { color: var(--text-secondary); }
+    .status-row .value { color: var(--text-primary); font-weight: 600; }
+
+    /* ============================================
+       HISTORY / KEYS
+    ============================================ */
+    .history-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+    .history-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 24px;
+        transition: var(--transition);
+    }
+    .history-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
+    .history-card .hdr {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+    .history-card .hdr h4 {
+        font-size: 16px;
+        font-weight: 700;
+    }
+    .history-card .hdr .price-tag {
+        font-weight: 700;
+        color: var(--accent-blue);
+        font-size: 15px;
+        padding: 4px 14px;
+        background: rgba(79, 140, 255, 0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(79, 140, 255, 0.1);
+    }
+    .history-card .meta {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+    }
+    .history-card .key-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+    .history-card .key-box .key-text {
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: 1px;
+        color: var(--accent-green);
+        word-break: break-all;
+        transition: var(--transition);
+    }
+    .history-card .key-box .key-text.masked {
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        font-weight: 500;
+    }
+    .history-card .key-box .key-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .history-card .key-box .key-actions button {
+        padding: 4px 14px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 12px;
+        transition: var(--transition);
+        border: 1.5px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .history-card .key-box .key-actions button:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .key-box .key-actions .reveal-key {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .key-box .key-actions .reveal-key:hover { background: rgba(79, 140, 255, 0.06); }
+    .history-card .key-box .key-actions .copy-key {
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+    }
+    .history-card .key-box .key-actions .copy-key:hover { background: rgba(52, 211, 153, 0.06); }
+
+    /* History download link box */
+    .history-card .download-link-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        background: rgba(79, 140, 255, 0.04);
+        border: 1px solid rgba(79, 140, 255, 0.1);
+        border-radius: var(--radius-sm);
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+    .history-card .download-link-box .dl-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .history-card .download-link-box .dl-label i { color: var(--accent-blue); }
+    .history-card .download-link-box .dl-url {
+        flex: 1;
+        font-size: 12px;
+        color: var(--accent-blue);
+        word-break: break-all;
+        font-family: 'Courier New', monospace;
+        min-width: 100px;
+    }
+    .history-card .download-link-box .dl-actions {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+    .history-card .download-link-box .dl-actions button {
+        padding: 3px 12px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 10px;
+        transition: var(--transition);
+        border: 1.5px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .history-card .download-link-box .dl-actions button:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .download-link-box .dl-actions .access-link {
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+    }
+    .history-card .download-link-box .dl-actions .access-link:hover { background: rgba(52, 211, 153, 0.06); }
+    .history-card .download-link-box .dl-actions .copy-link {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .download-link-box .dl-actions .copy-link:hover { background: rgba(79, 140, 255, 0.06); }
+    .history-card .download-link-box .no-link {
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    /* ============================================
+       PROFILE
+    ============================================ */
+    .profile-card {
+        max-width: 520px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+    .profile-card .prof-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .profile-card .prof-item:last-child { border-bottom: none; }
+    .profile-card .prof-item .label {
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .profile-card .prof-item .value {
+        font-weight: 600;
+    }
+    .profile-card .prof-item .value.highlight { color: var(--accent-blue); }
+    .profile-card .prof-item .value.green { color: var(--accent-green); }
+
+    /* ============================================
+       MODALS
+    ============================================ */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .modal {
+        width: 100%;
+        max-width: 460px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    @keyframes modalPop {
+        from { opacity: 0; transform: scale(0.95) translateY(12px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal .modal-head {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .modal .modal-head i { color: var(--accent-blue); }
+    .modal .checkout-box {
+        background: var(--bg-input);
+        border-radius: var(--radius-sm);
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+    }
+    .modal .checkout-box .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .modal .checkout-box .row:last-child { border-bottom: none; }
+    .modal .checkout-box .row strong { color: var(--text-primary); }
+    .modal .checkout-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0 0;
+        font-size: 18px;
+        font-weight: 800;
+        border-top: 2px solid var(--border-color);
+        margin-top: 4px;
+    }
+    .modal .checkout-total .total-amount { color: var(--accent-green); }
+    .modal .strike { text-decoration: line-through; color: var(--text-muted); font-size: 14px; font-weight: 500; margin-right: 8px; }
+    .modal .discount-badge {
+        padding: 2px 12px;
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid var(--accent-purple);
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent-purple);
+    }
+    .modal .coupon-section {
+        margin-bottom: 20px;
+    }
+    .modal .coupon-section .coupon-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+    .modal .coupon-section .coupon-box {
+        display: flex;
+        gap: 8px;
+    }
+    .modal .coupon-section .coupon-box input {
+        flex: 1;
+        padding: 10px 14px;
+        background: var(--bg-input);
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        text-transform: uppercase;
+        color: var(--text-primary);
+    }
+    .modal .coupon-section .coupon-box input:focus { border-color: var(--accent-purple); }
+    .modal .coupon-section .coupon-box button {
+        padding: 10px 22px;
+        background: var(--accent-purple);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 13px;
+        color: #fff;
+        transition: var(--transition);
+        white-space: nowrap;
+        cursor: pointer;
+    }
+    .modal .coupon-section .coupon-box button:hover { opacity: 0.9; }
+
+    .modal .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+    }
+    .modal .modal-actions .btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 14px;
+        transition: var(--transition);
+        text-align: center;
+        border: none;
+        cursor: pointer;
+    }
+    .modal .modal-actions .btn-outline-modal {
+        background: transparent;
+        border: 1.5px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+    .modal .modal-actions .btn-outline-modal:hover {
+        border-color: var(--border-light);
+        color: var(--text-primary);
+    }
+    .modal .modal-actions .btn-primary-modal {
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        color: #fff;
+    }
+    .modal .modal-actions .btn-primary-modal:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(79, 140, 255, 0.3);
+    }
+
+    .modal .success-icon {
+        font-size: 56px;
+        color: var(--accent-green);
+        margin-bottom: 12px;
+        display: block;
+        text-align: center;
+    }
+    .modal .key-display {
+        background: var(--bg-input);
+        padding: 16px 20px;
+        border-radius: var(--radius-sm);
+        border: 2px dashed rgba(52, 211, 153, 0.2);
+        margin: 16px 0;
+        text-align: center;
+    }
+    .modal .key-display .key-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .modal .key-display .key-value {
+        font-family: 'Courier New', monospace;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--accent-green);
+        letter-spacing: 2px;
+        word-break: break-all;
+    }
+    .modal .action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .modal .action-row .btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 13px;
+        transition: var(--transition);
+        text-align: center;
+        border: none;
+        min-width: 100px;
+        cursor: pointer;
+    }
+    .modal .action-row .btn-primary-modal {
+        background: var(--accent-blue);
+        color: #fff;
+    }
+    .modal .action-row .btn-primary-modal:hover { opacity: 0.85; }
+    .modal .action-row .btn-outline-modal {
+        background: transparent;
+        border: 1.5px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+    .modal .action-row .btn-outline-modal:hover {
+        border-color: var(--border-light);
+        color: var(--text-primary);
+    }
+
+    /* ============================================
+       TELEGRAM FAB
+    ============================================ */
+    .telegram-fab {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0088cc, #005580);
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 30px rgba(0, 136, 204, 0.4);
+        transition: var(--transition);
+        z-index: 999;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .telegram-fab:hover {
+        transform: scale(1.08);
+        box-shadow: 0 12px 40px rgba(0, 136, 204, 0.5);
+    }
+
+    /* ============================================
+       EMPTY STATE
+    ============================================ */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+        color: var(--text-secondary);
+    }
+    .empty-state i {
+        font-size: 48px;
+        color: var(--border-color);
+        margin-bottom: 16px;
+        display: block;
+    }
+    .empty-state p {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    .store-footer {
+        margin-top: 60px;
+        padding: 40px 24px 24px;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+    }
+    .store-footer h3 {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    .store-footer h3 span { color: var(--accent-pink); }
+    .store-footer p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+    .store-footer .badges {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+    .store-footer .badges span {
+        padding: 4px 18px;
+        border: 1px solid var(--border-color);
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+    .store-footer .features {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent-green);
+        margin-bottom: 16px;
+    }
+    .store-footer .copy {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 768px) {
+        .page-content { padding: 80px 16px 60px; }
+        .page-title { font-size: 22px; }
+        .search-box { max-width: 100%; }
+        .wallet-stats { grid-template-columns: 1fr 1fr; }
+        .premium-card { padding: 24px; }
+        .panel-grid { grid-template-columns: 1fr; }
+        .navbar .balance-pill { padding: 6px 14px; font-size: 12px; }
+        .navbar .brand { font-size: 17px; }
+        .dropdown { right: 16px; width: 200px; }
+        .qr-display { width: 140px; height: 140px; }
+        .modal { padding: 24px; }
+        .modal .modal-actions { flex-direction: column; }
+        .modal .coupon-section .coupon-box { flex-direction: column; }
+        .copy-row { flex-direction: column; align-items: stretch; }
+        .history-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+        .wallet-stats { grid-template-columns: 1fr; }
+        .auth-card { padding: 32px 20px; }
+        .wallet-tab { font-size: 12px; padding: 8px 14px; }
+        .navbar { padding: 0 16px; height: 64px; }
+        .page-content { padding: 76px 12px 50px; }
+        .modal .action-row { flex-direction: column; }
+    }
+</style>
+<script src="/api-config.js"></script>
+</head>
+<body>
+
+<!-- SECURITY OVERLAY -->
+<div id="security-overlay">
+    <div class="shield-icon"><i class="fas fa-shield-alt"></i></div>
+    <div class="security-title">Securing Connection</div>
+    <div class="security-progress"><div class="bar" id="security-bar"></div></div>
+    <div class="security-status" id="security-status">Initializing security protocols...</div>
+    <div class="security-dots">
+        <span id="dot1"></span>
+        <span id="dot2"></span>
+        <span id="dot3"></span>
+        <span id="dot4"></span>
+    </div>
+    <div class="security-checkmark" id="security-check"><i class="fas fa-check-circle"></i></div>
+</div>
+
+<!-- LOADER -->
+<div id="loader">
+    <div class="spinner-ring"></div>
+    <div class="loader-text">Loading</div>
+    <div class="loader-dots">
+        <span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ==========================================
+     AUTH SCREEN - Modern & Clean
+     ========================================== -->
+<div id="auth-screen">
+    <div class="auth-container">
+        <!-- LOGIN -->
+        <div class="auth-card" id="login-box">
+            <div class="brand">
+                <div class="logo-icon">FF</div>
+                <h1>GYX<span>MODZ</span></h1>
+                <p>Welcome back to your premium dashboard</p>
+            </div>
+            <div class="input-group">
+                <input id="login-email" placeholder="Email address" type="email"/>
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+            <div class="input-group">
+                <input id="login-pass" placeholder="Password" type="password"/>
+                <i class="fas fa-lock input-icon"></i>
+            </div>
+            <button class="btn-auth" id="btn-login">
+                <span><i class="fas fa-arrow-right"></i> Login</span>
+            </button>
+            <p class="auth-toggle">New here? <span id="go-to-signup">Create account</span></p>
+            <div class="auth-divider">or continue with</div>
+            <div class="social-row">
+                <a class="social-btn wa" href="#" id="auth-wa-link" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a class="social-btn tg" href="#" id="auth-tg-link" target="_blank"><i class="fab fa-telegram-plane"></i> Telegram</a>
+            </div>
+        </div>
+
+        <!-- SIGNUP -->
+        <div class="auth-card hidden" id="signup-box">
+            <div class="brand">
+                <div class="logo-icon">FF</div>
+                <h1>Join <span>Now</span></h1>
+                <p>Create your account and get started</p>
+            </div>
+            <div class="input-group">
+                <input id="signup-email" placeholder="Email address" type="email"/>
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+            <div class="input-group">
+                <input id="signup-pass" placeholder="Password (min 6 chars)" type="password"/>
+                <i class="fas fa-lock input-icon"></i>
+            </div>
+            <button class="btn-auth" id="btn-signup">
+                <span><i class="fas fa-user-plus"></i> Sign Up</span>
+            </button>
+            <p class="auth-toggle">Already registered? <span id="go-to-login">Login</span></p>
+            <div class="auth-divider">or continue with</div>
+            <div class="social-row">
+                <a class="social-btn wa" href="#" id="auth-wa-link-2" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a class="social-btn tg" href="#" id="auth-tg-link-2" target="_blank"><i class="fab fa-telegram-plane"></i> Telegram</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     MAIN APP
+     ========================================== -->
+<div id="main-app">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon">FF</div>
+            <img id="site-logo" src="" style="display:none;"/>
+            <span id="site-name">GYX MODZ</span>
+        </div>
+        <div class="nav-actions">
+            <div class="balance-pill"><i class="fas fa-wallet"></i> ₹<span id="nav-balance">0.00</span></div>
+            <button class="menu-btn" id="menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+        <div class="dropdown" id="dropdown-menu">
+            <div class="dropdown-item" onclick="navigate('home')"><i class="fas fa-th-large"></i> Dashboard</div>
+            <div class="dropdown-item" onclick="navigate('wallet')"><i class="fas fa-wallet"></i> Wallet</div>
+            <div class="dropdown-item" onclick="navigate('history')"><i class="fas fa-key"></i> My Keys</div>
+            <div class="dropdown-item" onclick="navigate('profile')"><i class="fas fa-user"></i> Profile</div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item danger" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        </div>
+    </nav>
+
+    <!-- PAGE: HOME -->
+    <div class="page-content" id="page-home">
+        <div class="page-header">
+            <h2 class="page-title">Premium <span>Store</span></h2>
+            <div class="search-box">
+                <input id="search-input" placeholder="Search panels..." type="text"/>
+                <i class="fas fa-search search-icon"></i>
+                <i class="fas fa-spinner search-spinner" id="search-loader"></i>
+            </div>
+        </div>
+
+        <div id="promo-container" class="promo-slider hidden"></div>
+
+        <div class="panel-grid" id="panels-container">
+            <!-- Injected via JS -->
+        </div>
+
+        <div class="empty-state hidden" id="search-empty">
+            <i class="fas fa-search-minus"></i>
+            <p>No panels found</p>
+            <button class="btn-primary-solid" onclick="document.getElementById('search-input').value=''; document.getElementById('search-input').dispatchEvent(new Event('input'));" style="width:auto;padding:10px 28px;margin-top:12px;font-size:13px;">Clear Search</button>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="store-footer">
+            <h3>FF <span>PANEL</span> STORE</h3>
+            <p>Best trusted store for premium Free Fire panels &amp; services</p>
+            <div class="badges">
+                <span>🔒 Safe Payment</span>
+                <span>⚡ Secure Checkout</span>
+                <span>👥 248k+ Users</span>
+            </div>
+            <div class="features">
+                <span>✔ Fast Delivery</span>
+                <span>✔ Instant Service</span>
+                <span>✔ Trusted Seller</span>
+            </div>
+            <p class="copy">© 2026-2031 FF Panel Store. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: WALLET -->
+    <div class="page-content hidden" id="page-wallet">
+        <div class="page-header">
+            <h2 class="page-title">My <span>Wallet</span></h2>
+        </div>
+
+        <!-- Stats -->
+        <div class="wallet-stats">
+            <div class="wallet-stat">
+                <div class="stat-icon blue"><i class="fas fa-wallet"></i></div>
+                <div class="stat-info">
+                    <h4>Balance</h4>
+                    <h2 id="wallet-stat-bal">₹0.00</h2>
+                </div>
+            </div>
+            <div class="wallet-stat">
+                <div class="stat-icon green"><i class="fas fa-calendar-day"></i></div>
+                <div class="stat-info">
+                    <h4>Today</h4>
+                    <h2 id="wallet-stat-today">₹0.00</h2>
+                </div>
+            </div>
+            <div class="wallet-stat">
+                <div class="stat-icon purple"><i class="fas fa-arrow-down"></i></div>
+                <div class="stat-info">
+                    <h4>Total Deposit</h4>
+                    <h2 id="wallet-stat-dep">₹0.00</h2>
+                </div>
+            </div>
+            <div class="wallet-stat">
+                <div class="stat-icon gold"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <h4>Pending</h4>
+                    <h2 id="wallet-stat-pending">₹0.00</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="wallet-tabs">
+            <div class="wallet-tab active" onclick="switchWalletTab('auto')" id="tab-btn-auto"><i class="fas fa-bolt"></i> Instant UPI</div>
+            <div class="wallet-tab crypto" onclick="switchWalletTab('crypto')" id="tab-btn-crypto"><i class="fab fa-bitcoin"></i> Crypto</div>
+            <div class="wallet-tab manual" onclick="switchWalletTab('manual')" id="tab-btn-manual"><i class="fas fa-qrcode"></i> Manual UPI</div>
+            <div class="wallet-tab support" onclick="switchWalletTab('support')" id="tab-btn-support"><i class="fas fa-headset"></i> Support</div>
+        </div>
+
+        <!-- Tab: Instant UPI -->
+        <div id="wallet-tab-auto" class="wallet-section">
+            <div class="premium-card">
+                <div class="card-head">
+                    <i class="fas fa-bolt" style="color:var(--accent-blue);"></i>
+                    <h3>Instant Gateway</h3>
+                </div>
+                <p class="card-desc">Fast UPI payment. Balance updates automatically within seconds.</p>
+                <div class="input-group">
+                    <input id="add-amount" placeholder="Amount (₹)" type="number"/>
+                </div>
+                <div class="input-group">
+                    <input id="add-phone" placeholder="WhatsApp Number" type="tel"/>
+                </div>
+                <button class="btn-primary-solid" id="btn-submit-payment" style="width:100%;">
+                    <i class="fas fa-arrow-right"></i> Pay Now
+                </button>
+
+                <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border-color);">
+                    <h4 style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;"><i class="fas fa-search"></i> Check Order Status</h4>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <input id="status-order-id" placeholder="Order ID" style="flex:1;padding:12px 16px;background:var(--bg-input);border:1.5px solid var(--border-color);border-radius:var(--radius-sm);font-size:14px;min-width:140px;color:var(--text-primary);"/>
+                        <button class="btn-outline" id="btn-check-status" style="border-color:var(--accent-gold);color:var(--accent-gold);">Verify</button>
+                    </div>
+                    <div id="status-result" class="hidden" style="margin-top:16px;">
+                        <div class="status-grid">
+                            <div class="status-row"><span class="label">Order ID</span><span class="value" id="res-oid" style="font-size:13px;">-</span></div>
+                            <div class="status-row"><span class="label">Status</span><span class="value" id="res-status" style="font-weight:700;">-</span></div>
+                            <div class="status-row"><span class="label">Amount</span><span class="value" id="res-amount" style="color:var(--accent-blue);">-</span></div>
+                            <div class="status-row" style="border-bottom:none;"><span class="label">Date</span><span class="value" id="res-date" style="font-size:13px;">-</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Crypto -->
+        <div id="wallet-tab-crypto" class="wallet-section hidden">
+            <div class="premium-card">
+                <div class="card-head">
+                    <i class="fab fa-bitcoin" style="color:var(--accent-gold);"></i>
+                    <h3>Binance / USDT</h3>
+                </div>
+                <p class="card-desc">Send USDT via Binance Pay or TRC20. Rate: <strong style="color:var(--accent-gold);">1 USDT = ₹<span id="crypto-rate">88.00</span></strong></p>
+
+                <div class="qr-display crypto">
+                    <img id="crypto-qr-display" src="" alt="QR" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-qrcode\\' style=\\'font-size:48px;color:var(--text-muted);\\'></i>'"/>
+                </div>
+                <div style="text-align:center;margin-bottom:20px;">
+                    <a id="crypto-qr-download" href="#" download="QR.jpg" class="btn-outline" style="border-color:var(--accent-gold);color:var(--accent-gold);">Download QR</a>
+                </div>
+
+                <div class="copy-row">
+                    <div>
+                        <span class="copy-label">Binance Pay ID</span>
+                        <div class="copy-value" id="crypto-payid-display">Loading...</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('crypto-payid-display','Binance Pay ID')">Copy</button>
+                </div>
+                <div class="copy-row">
+                    <div>
+                        <span class="copy-label">USDT Address (TRC20)</span>
+                        <div class="copy-value" id="crypto-address-display">Loading...</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('crypto-address-display','USDT Address')">Copy</button>
+                </div>
+
+                <button class="btn-primary-solid" style="width:100%;background:linear-gradient(135deg,var(--accent-gold),#f59e0b);color:#000;" onclick="openModal('modal-crypto-deposit')">
+                    <i class="fas fa-check-circle"></i> I Have Paid
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab: Manual UPI -->
+        <div id="wallet-tab-manual" class="wallet-section hidden">
+            <div class="premium-card">
+                <div class="card-head">
+                    <i class="fas fa-qrcode" style="color:var(--accent-purple);"></i>
+                    <h3>Manual UPI</h3>
+                </div>
+                <p class="card-desc">Scan the QR or copy UPI ID to transfer funds manually.</p>
+
+                <div class="qr-display manual">
+                    <img id="manual-qr-display" src="" alt="QR" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-qrcode\\' style=\\'font-size:48px;color:var(--text-muted);\\'></i>'"/>
+                </div>
+                <div style="text-align:center;margin-bottom:20px;">
+                    <a id="manual-qr-download" href="#" download="QR.jpg" class="btn-outline" style="border-color:var(--accent-purple);color:var(--accent-purple);">Download QR</a>
+                </div>
+
+                <div class="copy-row">
+                    <div>
+                        <span class="copy-label">UPI ID</span>
+                        <div class="copy-value" id="manual-upi-display">Loading...</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('manual-upi-display','UPI ID')">Copy</button>
+                </div>
+
+                <div class="input-group"><input id="manual-amount" placeholder="Amount Sent (₹)" type="number"/></div>
+                <div class="input-group"><input id="manual-utr" placeholder="12-Digit UTR / Ref No." type="text"/></div>
+                <div class="input-group"><input id="manual-app" placeholder="Payment App (PhonePe, Paytm, etc.)" type="text"/></div>
+                <div class="input-group"><input id="manual-screenshot" placeholder="Screenshot URL (Drive, ImgBB)" type="url"/></div>
+
+                <button class="btn-primary-solid" id="btn-submit-manual" style="width:100%;background:linear-gradient(135deg,var(--accent-purple),#7c3aed);">
+                    <i class="fas fa-paper-plane"></i> Submit Request
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab: Support -->
+        <div id="wallet-tab-support" class="wallet-section hidden">
+            <div class="premium-card" style="text-align:center;max-width:480px;">
+                <i class="fas fa-headset" style="font-size:48px;color:var(--accent-green);margin-bottom:12px;display:block;"></i>
+                <h3 style="font-size:20px;font-weight:800;margin-bottom:8px;">Need Help?</h3>
+                <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;margin-bottom:24px;">
+                    Facing issues with deposits, purchases, or your account? Contact support.
+                </p>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <a href="#" id="support-wa-btn" target="_blank" class="btn-outline" style="border-color:#25D366;color:#25D366;justify-content:center;padding:12px;">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Support
+                    </a>
+                    <a href="#" id="support-tg-btn" target="_blank" class="btn-outline" style="border-color:#0088cc;color:#0088cc;justify-content:center;padding:12px;">
+                        <i class="fab fa-telegram-plane"></i> Telegram Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: PROFILE -->
+    <div class="page-content hidden" id="page-profile">
+        <div class="page-header"><h2 class="page-title">Account <span>Details</span></h2></div>
+        <div class="profile-card">
+            <div class="prof-item">
+                <span class="label"><i class="fas fa-envelope"></i> Email</span>
+                <span class="value" id="prof-email">...</span>
+            </div>
+            <div class="prof-item">
+                <span class="label"><i class="fas fa-wallet"></i> Balance</span>
+                <span class="value green" id="prof-bal">₹0.00</span>
+            </div>
+            <div class="prof-item">
+                <span class="label"><i class="fas fa-shopping-cart"></i> Purchases</span>
+                <span class="value" id="prof-purchases">0</span>
+            </div>
+            <div class="prof-item">
+                <span class="label"><i class="fas fa-chart-line"></i> Total Spent</span>
+                <span class="value highlight" id="prof-spent">₹0.00</span>
+            </div>
+            <div class="prof-item">
+                <span class="label"><i class="fas fa-calendar-alt"></i> Joined</span>
+                <span class="value" id="prof-date">...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: HISTORY -->
+    <div class="page-content hidden" id="page-history">
+        <div class="page-header"><h2 class="page-title">My <span>Keys</span></h2></div>
+        <div class="history-grid" id="history-container">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <!-- TELEGRAM FAB -->
+    <a class="telegram-fab" href="#" id="global-telegram-btn" target="_blank" style="display:none;">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+</div>
+
+<!-- ==========================================
+     MODALS
+     ========================================== -->
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay hidden" id="modal-checkout">
+    <div class="modal">
+        <div class="modal-head"><i class="fas fa-shopping-cart"></i> Checkout</div>
+        <div class="checkout-box">
+            <div class="row"><span>Item</span><strong id="chk-panel-name">Panel</strong></div>
+            <div class="row"><span>Plan</span><strong id="chk-plan-label" style="color:var(--accent-gold);">Plan</strong></div>
+            <div class="row"><span>Original Price</span><strong>₹<span id="chk-orig-price">0.00</span></strong></div>
+            <div class="checkout-total">
+                <span>To Pay</span>
+                <div>
+                    <span class="strike hidden" id="chk-strike-price">₹0.00</span>
+                    <span class="total-amount">₹<span id="chk-final-price">0.00</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="coupon-section">
+            <div class="coupon-head">
+                <span>Promo Code</span>
+                <span class="discount-badge hidden" id="chk-discount-badge">0% OFF</span>
+            </div>
+            <div class="coupon-box">
+                <input id="chk-coupon-input" placeholder="Enter code"/>
+                <button id="btn-apply-coupon" onclick="applyCouponUI()">Apply</button>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline-modal" onclick="closeModal('modal-checkout')">Cancel</button>
+            <button class="btn btn-primary-modal" id="btn-confirm-pay" onclick="executePurchase()">Confirm Pay</button>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay hidden" id="modal-success">
+    <div class="modal" style="text-align:center;">
+        <i class="fas fa-check-circle success-icon"></i>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;">Order Placed!</h2>
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">Your order is pending admin approval. Your license key will appear in <strong>My Keys</strong> once delivered.</p>
+        <div class="key-display">
+            <span class="key-label">Status</span>
+            <div class="key-value" id="modal-key-display">Pending Approval</div>
+        </div>
+        <div class="action-row">
+            <button class="btn btn-primary-modal" id="modal-btn-access"><i class="fas fa-key"></i> View My Keys</button>
+            <button class="btn btn-outline-modal" onclick="closeModal('modal-success')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- CRYPTO DEPOSIT MODAL -->
+<div class="modal-overlay hidden" id="modal-crypto-deposit">
+    <div class="modal" style="border-color:rgba(251,191,36,0.25);">
+        <div class="modal-head"><i class="fab fa-bitcoin" style="color:var(--accent-gold);"></i> Crypto Deposit</div>
+        <div class="input-group"><input id="crypto-amount" placeholder="Amount (USDT or INR)" type="number"/></div>
+        <div class="input-group"><input id="crypto-hash" placeholder="Transaction Hash / ID" type="text"/></div>
+        <div class="input-group"><input id="crypto-screenshot" placeholder="Screenshot URL" type="url"/></div>
+        <div class="input-group"><input id="crypto-note" placeholder="Optional note" type="text"/></div>
+        <div class="modal-actions">
+            <button class="btn btn-outline-modal" onclick="closeModal('modal-crypto-deposit')">Cancel</button>
+            <button class="btn btn-primary-modal" id="btn-submit-crypto" onclick="submitCryptoDeposit()" style="background:linear-gradient(135deg,var(--accent-gold),#f59e0b);color:#000;">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     FIREBASE + APP LOGIC
+     ========================================== -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, onValue, push, runTransaction, serverTimestamp, update }
+        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_WEB_API_KEY",
+  authDomain: "grishuu-5fbe2.firebaseapp.com",
+  databaseURL: "https://grishuu-5fbe2-default-rtdb.firebaseio.com",
+  projectId: "grishuu-5fbe2",
+  storageBucket: "grishuu-5fbe2.firebasestorage.app",
+  messagingSenderId: "373733786268",
+  appId: "1:373733786268:web:950a50438a4657d9ae6359",
+  measurementId: "G-KREQ6FG41N"
+    };
+
+    let app, auth, db;
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getDatabase(app);
+    } catch (e) {
+        console.error("Firebase init error:", e);
+        alert("Database connection failed. Please check configuration.");
+    }
+
+    // --- STATE ---
+    let currentUser = null;
+    let userData = { balance: 0 };
+    
+    window.MANUAL_UPI = "";
+    let securityCompleted = false;
+
+    const loader = document.getElementById('loader');
+    const authScreen = document.getElementById('auth-screen');
+    const mainApp = document.getElementById('main-app');
+    const securityOverlay = document.getElementById('security-overlay');
+
+    // --- SECURITY SYSTEM ---
+    function runSecurityCheck() {
+        return new Promise((resolve) => {
+            securityOverlay.classList.add('active');
+            const bar = document.getElementById('security-bar');
+            const status = document.getElementById('security-status');
+            const dots = [
+                document.getElementById('dot1'),
+                document.getElementById('dot2'),
+                document.getElementById('dot3'),
+                document.getElementById('dot4')
+            ];
+            const checkmark = document.getElementById('security-check');
+
+            // Reset UI
+            bar.style.width = '0%';
+            dots.forEach(d => { d.className = ''; });
+            checkmark.style.display = 'none';
+            status.textContent = 'Initializing security protocols...';
+
+            const steps = [
+                { text: 'Verifying SSL encryption...', progress: 25 },
+                { text: 'Checking session integrity...', progress: 50 },
+                { text: 'Validating user permissions...', progress: 75 },
+                { text: 'Secure connection established!', progress: 100 }
+            ];
+
+            let stepIndex = 0;
+
+            function advanceStep() {
+                if (stepIndex >= steps.length) {
+                    // Complete
+                    status.textContent = '✅ Security check complete!';
+                    dots.forEach(d => d.className = 'done');
+                    checkmark.style.display = 'block';
+                    setTimeout(() => {
+                        securityOverlay.classList.remove('active');
+                        resolve();
+                    }, 800);
+                    return;
+                }
+
+                const step = steps[stepIndex];
+                status.textContent = step.text;
+                bar.style.width = step.progress + '%';
+
+                // Update dots
+                if (stepIndex < dots.length) {
+                    dots[stepIndex].className = 'active';
+                }
+
+                stepIndex++;
+                setTimeout(advanceStep, 700);
+            }
+
+            // Start the sequence
+            setTimeout(advanceStep, 400);
+        });
+    }
+
+    // Run security check on app load
+    async function performSecurityCheck() {
+        if (securityCompleted) return;
+        await runSecurityCheck();
+        securityCompleted = true;
+    }
+
+    // --- UTILITIES ---
+    window.showLoader = () => loader.classList.remove('hidden');
+    window.hideLoader = () => loader.classList.add('hidden');
+
+    window.showToast = (msg, type = 'success') => {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icon = type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check-circle';
+        toast.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    };
+
+    window.copyToClipboard = (elementId, label) => {
+        const el = document.getElementById(elementId);
+        if (!el) {
+            showToast("Element not found", "error");
+            return;
+        }
+        const text = el.dataset.key || el.innerText || el.textContent;
+        if (!text || text === 'Loading...' || text === 'XXXXXX' || text === 'Not Set' || text === '...' || text === '••••••••••••') {
+            showToast("Nothing to copy", "warning");
+            return;
+        }
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`${label || 'Text'} copied!`, "success");
+            }).catch(() => {
+                fallbackCopy(text, label);
+            });
+        } else {
+            fallbackCopy(text, label);
+        }
+    };
+
+    function fallbackCopy(text, label) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showToast(`${label || 'Text'} copied!`, "success");
+        } catch (e) {
+            showToast("Failed to copy. Please copy manually.", "error");
+        }
+        document.body.removeChild(textarea);
+    }
+
+    window.closeModal = (id) => {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.add('hidden');
+    };
+    
+    window.openModal = (id) => {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('hidden');
+    };
+
+    function generateKey(length = 12) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+        return result;
+    }
+
+    function extractYouTubeID(url) {
+        if (!url) return null;
+        url = String(url).trim();
+        if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+        const match = url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    // Auth toggles
+    document.getElementById('go-to-signup').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('login-box').classList.add('hidden');
+        document.getElementById('signup-box').classList.remove('hidden');
+    });
+    
+    document.getElementById('go-to-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('signup-box').classList.add('hidden');
+        document.getElementById('login-box').classList.remove('hidden');
+    });
+
+    // --- WALLET TABS ---
+    window.switchWalletTab = (tab) => {
+        document.querySelectorAll('.wallet-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.wallet-section').forEach(s => s.classList.add('hidden'));
+        const tabMap = { auto: 'tab-btn-auto', crypto: 'tab-btn-crypto', manual: 'tab-btn-manual', support: 'tab-btn-support' };
+        if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
+        const section = document.getElementById(`wallet-tab-${tab}`);
+        if (section) section.classList.remove('hidden');
+    };
+
+    // --- SECURE PAYMENT SYSTEM ---
+    let paymentPollInterval = null;
+    async function createDepositPayment(amount, phone) {
+        const result = await backendFetch('/api/deposits', {
+            method:'POST', body:JSON.stringify({amount:Number(amount), phone})
+        });
+        return result;
+    }
+    async function checkDeposit(orderId) {
+        try {
+            const r=await backendFetch('/api/deposits/'+encodeURIComponent(orderId));
+            if(r.status==='success' || r.status==='approved') showToast('Payment verified and wallet updated.','success');
+            return r;
+        } catch(e) { return null; }
+    }
+    document.getElementById('btn-submit-payment')?.addEventListener('click', async function() {
+        const amt = document.getElementById('add-amount')?.value;
+        const phone = document.getElementById('add-phone')?.value.trim();
+        const btn=this;
+        if(!amt || Number(amt)<=0) return showToast('Enter valid amount','error');
+        if(!phone || phone.length<10) return showToast('Enter valid phone number','error');
+        btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing...';
+        try {
+            const r=await createDepositPayment(amt,phone);
+            if(r.redirect_url) window.location.href=r.redirect_url;
+            else showToast('Payment order created. Complete payment using the gateway.','success');
+            if(r.order_id) localStorage.setItem('pending_deposit_id',r.order_id);
+        } catch(e) { showToast(e.message||'Gateway error','error'); }
+        finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Pay Now'; }
+    });
+    setInterval(async()=>{const id=localStorage.getItem('pending_deposit_id'); if(id && currentUser) {const r=await checkDeposit(id); if(r?.status==='success'||r?.status==='approved') localStorage.removeItem('pending_deposit_id');}},7000);
+
+    // --- CHECKOUT ---
+    window.currentCheckout = {};
+    window.appliedCoupon = null;
+
+    window.handlePurchaseClick = (panelId, panelName, link) => {
+        const select = document.getElementById(`plan-${panelId}`);
+        if (!select) return showToast('No plans available', 'error');
+        let planData;
+        try {
+            planData = JSON.parse(select.value);
+        } catch(e) {
+            return showToast('Error reading plan data', 'error');
+        }
+        window.currentCheckout = {
+            panelId, panelName, link: link || '',
+            planKey: planData.key || '',
+            label: planData.label || 'Plan',
+            originalPrice: parseFloat(planData.price) || 0,
+            finalPrice: parseFloat(planData.price) || 0
+        };
+        window.appliedCoupon = null;
+        document.getElementById('chk-panel-name').innerText = panelName;
+        document.getElementById('chk-plan-label').innerText = planData.label || 'Plan';
+        document.getElementById('chk-orig-price').innerText = (parseFloat(planData.price) || 0).toFixed(2);
+        document.getElementById('chk-final-price').innerText = (parseFloat(planData.price) || 0).toFixed(2);
+        document.getElementById('chk-coupon-input').value = '';
+        document.getElementById('chk-strike-price').classList.add('hidden');
+        document.getElementById('chk-discount-badge').classList.add('hidden');
+        openModal('modal-checkout');
+    };
+
+    window.applyCouponUI = async function() {
+        const code = document.getElementById('chk-coupon-input').value.trim().toUpperCase();
+        if (!code) return showToast('Enter a coupon code', 'warning');
+        const btn = document.getElementById('btn-apply-coupon');
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+        btn.disabled = true;
+        try {
+            const snap = await get(ref(db, 'coupons'));
+            let coupon = null;
+            if (snap.exists()) {
+                const data = snap.val();
+                const found = Object.keys(data).find(k => data[k].code === code);
+                if (found) coupon = { id: found, ...data[found] };
+            }
+            if (!coupon || coupon.status !== true) {
+                showToast("Invalid or expired coupon", "error");
+            } else if (coupon.maxUse && coupon.used >= coupon.maxUse) {
+                showToast("Coupon limit reached", "error");
+            } else {
+                const price = window.currentCheckout.originalPrice || 0;
+                const discount = (price * (coupon.discount || 0)) / 100;
+                const final = Math.max(0, price - discount);
+                window.appliedCoupon = coupon;
+                window.currentCheckout.finalPrice = final;
+                document.getElementById('chk-final-price').innerText = final.toFixed(2);
+                const strike = document.getElementById('chk-strike-price');
+                strike.innerText = '₹' + price.toFixed(2);
+                strike.classList.remove('hidden');
+                const badge = document.getElementById('chk-discount-badge');
+                badge.innerText = (coupon.discount || 0) + '% OFF';
+                badge.classList.remove('hidden');
+                showToast(`Coupon applied! ${coupon.discount}% OFF`, "success");
+            }
+        } catch (e) { showToast("Error validating coupon", "error"); } finally {
+            btn.innerHTML = 'Apply';
+            btn.disabled = false;
+        }
+    };
+
+    window.executePurchase = async function() {
+        const checkout = window.currentCheckout;
+        const price = checkout.finalPrice || 0;
+        const btn = document.getElementById('btn-confirm-pay');
+        if (!currentUser) return showToast('Please login first', 'error');
+        showLoader(); btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Creating payment...`;
+        try {
+            const order = await backendFetch('/api/orders', {
+                method: 'POST',
+                body: JSON.stringify({
+                    productId: checkout.panelId,
+                    planKey: checkout.planKey,
+                    amount: price,
+                    couponId: window.appliedCoupon?.id || null
+                })
+            });
+            if (order.redirect_url) {
+                window.location.href = order.redirect_url;
+                return;
+            }
+            if (order.status === 'paid' && order.key) {
+                showToast('Payment verified and key generated!', 'success');
+                closeModal('modal-checkout');
+                window.location.reload();
+                return;
+            }
+            showToast('Payment order created. Complete payment to receive your key.', 'success');
+            closeModal('modal-checkout');
+            if (order.order_id) localStorage.setItem('pending_order_id', order.order_id);
+        } catch (e) {
+            console.error(e); showToast(e.message || 'Payment/order error', 'error');
+        } finally { hideLoader(); btn.disabled = false; btn.innerHTML = 'Confirm Pay'; }
+    };
+
+    async function checkPendingOrder() {
+        const orderId = localStorage.getItem('pending_order_id');
+        if (!orderId || !currentUser) return;
+        try {
+            const r = await backendFetch('/api/orders/' + encodeURIComponent(orderId));
+            if (r.status === 'paid' && r.key) {
+                localStorage.removeItem('pending_order_id');
+                showToast('Payment verified — your key is ready.', 'success');
+                if (typeof fetchKeys === 'function') fetchKeys();
+            } else if (['failed','cancelled'].includes(r.status)) {
+                localStorage.removeItem('pending_order_id');
+            }
+        } catch (_) {}
+    }
+    setInterval(checkPendingOrder, 7000);
+    setTimeout(checkPendingOrder, 2500);
+
+    // --- HISTORY / KEYS (reads from orders, only approved orders with a delivered key) ---
+    function fetchKeys() {
+        if (!db || !currentUser) return;
+        showLoader();
+        const container = document.getElementById('history-container');
+        container.innerHTML = '';
+        get(ref(db, 'orders/' + currentUser.uid)).then(snap => {
+            if (!snap.exists()) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-key"></i><p>No keys available yet. Place an order and wait for approval.</p></div>';
+                document.getElementById('prof-purchases').innerText = '0';
+                hideLoader(); return;
+            }
+            const items = [];
+            snap.forEach(c => { const o = c.val(); if (o.status === 'approved' && o.key) items.push({ id: c.key, ...o }); });
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-key"></i><p>No approved keys yet. Your order is pending admin approval — please check back soon.</p></div>';
+                document.getElementById('prof-purchases').innerText = '0';
+                hideLoader(); return;
+            }
+            items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            document.getElementById('prof-purchases').innerText = items.length;
+            items.forEach(o => {
+                const dateStr = o.date ? new Date(o.date).toLocaleString() : 'N/A';
+                const label = o.label || 'Premium Access';
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                const keyId = 'hist-key-' + (o.id || Date.now());
+                const actualKey = o.key || 'N/A';
+                const masked = '••••••••••••';
+
+                const dl = o.downloadLink || o.link || '';
+                let dlHtml = '';
+                if (dl) {
+                    const dlId = 'hist-dl-' + (o.id || Date.now());
+                    dlHtml = `
+                        <div class="download-link-box">
+                            <span class="dl-label"><i class="fas fa-download"></i> Download</span>
+                            <span class="dl-url" id="${dlId}">${dl.length > 40 ? dl.slice(0,40)+'…' : dl}</span>
+                            <div class="dl-actions">
+                                <button class="access-link" onclick="window.open('${dl}','_blank')"><i class="fas fa-external-link-alt"></i> Access</button>
+                                <button class="copy-link" onclick="copyToClipboard('${dlId}','Download Link')"><i class="fas fa-copy"></i> Copy</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    dlHtml = '<div class="download-link-box"><span class="no-link"><i class="fas fa-info-circle"></i> No download link</span></div>';
+                }
+
+                card.innerHTML =
+                    '<div class="hdr"><h4>' + (o.panelName || 'Panel') +
+                    '</h4><span class="price-tag">₹' + (o.price || 0).toFixed(2) +
+                    '</span></div><div class="meta"><i class="fas fa-tag"></i> ' + label +
+                    ' &middot; ' + dateStr +
+                    '</div><div class="key-box"><span class="key-text masked" data-key="' + actualKey +
+                    '" id="' + keyId + '">' + masked +
+                    '</span><div class="key-actions"><button class="reveal-key" data-target="' + keyId +
+                    '"><i class="fas fa-eye"></i> Reveal</button><button class="copy-key" onclick="copyToClipboard(\'' +
+                    keyId + '\',\'License Key\')"><i class="fas fa-copy"></i> Copy</button></div></div>' +
+                    dlHtml;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.reveal-key').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const span = document.getElementById(targetId);
+                    if (!span) return;
+                    const isMasked = span.classList.contains('masked');
+                    if (isMasked) {
+                        span.innerText = span.dataset.key;
+                        span.classList.remove('masked');
+                        this.innerHTML = '<i class="fas fa-eye-slash"></i> Hide';
+                    } else {
+                        span.innerText = '••••••••••••';
+                        span.classList.add('masked');
+                        this.innerHTML = '<i class="fas fa-eye"></i> Reveal';
+                    }
+                });
+            });
+            hideLoader();
+        }).catch(() => { hideLoader();
+            showToast('Failed to load keys', 'error'); });
+    }
+
+    // --- INIT ---
+    // Initial load - hide loader after security check if user not logged in
+    setTimeout(() => {
+        if (!currentUser) {
+            hideLoader();
+            // Run security check on auth screen as well
+            if (!securityCompleted) {
+                performSecurityCheck().then(() => {
+                    // Security check done, show auth screen normally
+                });
+            }
+        }
+    }, 2000);
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('dropdown-menu');
+        const toggle = document.getElementById('menu-toggle');
+        if (menu && menu.classList.contains('active') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+            menu.classList.remove('active');
+        }
+    });
+
+    // Enter key support for login
+    document.getElementById('login-pass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('btn-login').click();
+    });
+    document.getElementById('login-email').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('btn-login').click();
+    });
+    document.getElementById('signup-pass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('btn-signup').click();
+    });
+    document.getElementById('signup-email').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('btn-signup').click();
+    });
+
+    console.log('✅ GYX MODZ App initialized with enhanced security system');
+</script>
+</body>
+</html>

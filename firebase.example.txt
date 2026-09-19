@@ -1,0 +1,4 @@
+# Firebase client configuration
+# The browser Firebase apiKey is not a server secret, but keep Admin SDK/service account JSON only on the backend.
+# Create a Firebase Web App and copy its public config into index.html/admin.html if you change projects.
+# NEVER upload a Firebase service-account JSON or backend secrets to the public website.

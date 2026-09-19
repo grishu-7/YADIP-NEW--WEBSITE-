@@ -1,0 +1,6 @@
+[build]
+  publish = "."
+# This project is designed to run the Node backend as one service.
+# Netlify can host the static frontend, but the secure reseller/payment backend
+# should run on a Node web service/VPS. Set window.API_BASE_URL in api-config.js
+# to that backend URL when using Netlify for the frontend.

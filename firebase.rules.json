@@ -1,0 +1,42 @@
+{
+  "rules": {
+    "panels": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+    },
+    "promotions": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+    },
+    "coupons": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')"
+      }
+    },
+    "orders": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')"
+      }
+    },
+    "transactions": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')"
+      }
+    },
+    "gateway_payments": {
+      ".read": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'",
+      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+    },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+    }
+  }
+}
