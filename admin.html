@@ -919,14 +919,14 @@
               <div class="form-group"><label>Category</label><input id="add-p-category" class="form-input" placeholder="Free Fire, BGMI" /></div>
               <div class="form-group"><label>Normal Video URL</label><input id="add-p-yt" class="form-input" placeholder="https://example.com/video.mp4" /></div>
               <div class="form-group"><label>Product ID / PID</label><input id="add-p-pid" class="form-input" placeholder="PID123" /></div>
-              <div class="form-group"><label>Reseller Duration String</label><input id="add-p-duration" class="form-input" placeholder="30D" /></div>
+              
               <div class="form-group"><label>Android ID (optional — only for Device-Bound/V1)</label><input id="add-p-android-id" class="form-input" placeholder="Optional Android ID" /></div>
               <div class="form-group"><label>Update File Link</label><input id="add-p-link" class="form-input" placeholder="https://t.me/…" /></div>
               <div class="form-group"><label>Feedback Link (optional)</label><input id="add-p-feedback" class="form-input" placeholder="https://t.me/…" /></div>
               <div class="form-group"><label>Description</label><textarea id="add-p-desc" class="form-input" rows="3" placeholder="- Aimbot&#10;- Auto Headshot"></textarea></div>
               <div style="background:var(--surface-2);padding:18px;border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:20px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-weight:600;"><i class="fas fa-tags" style="color:var(--accent);"></i> Pricing Plans</span><button class="btn btn-outline btn-sm" id="btn-add-plan-row"><i class="fas fa-plus"></i> Plan</button></div>
-                <div id="plans-container"><div class="plan-row"><input class="p-label form-input" placeholder="Plan Name" /><input class="p-price form-input" placeholder="Price (₹)" type="number" /><input class="p-keys form-input" placeholder="Keys" value="1" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();window.updateLivePreview();"><i class="fas fa-trash"></i></button></div></div>
+                <div id="plans-container"><div class="plan-row"><input class="p-label form-input" placeholder="Plan Name" /><input class="p-price form-input" placeholder="Price (₹)" type="number" /><input class="p-duration form-input" placeholder="Reseller Duration String" /><input class="p-keys form-input" placeholder="Keys" value="1" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();window.updateLivePreview();"><i class="fas fa-trash"></i></button></div></div>
               </div>
               <button class="btn btn-primary btn-block" id="btn-submit-panel"><i class="fas fa-cloud-upload-alt"></i> Publish Panel</button>
             </div>
@@ -1038,7 +1038,7 @@
   <!-- MODALS -->
   <div class="modal-overlay hidden" id="modal-balance"><div class="modal"><div class="modal-header"><h3>Edit Balance</h3><button class="icon-btn" onclick="closeModal('modal-balance')"><i class="fas fa-times"></i></button></div><input id="edit-bal-uid" type="hidden" /><div class="form-group"><label>Current (₹)</label><input id="edit-bal-current" class="form-input" disabled /></div><div class="form-group"><label>Action</label><select id="edit-bal-type" class="form-input"><option value="add">Add (+)</option><option value="deduct">Deduct (-)</option><option value="set">Set (=)</option></select></div><div class="form-group"><label>Amount</label><input id="edit-bal-amount" class="form-input" type="number" /></div><button class="btn btn-primary btn-block" id="btn-save-balance">Update</button></div></div>
 
-  <div class="modal-overlay hidden" id="modal-edit-panel"><div class="modal" style="max-width:600px;"><div class="modal-header"><h3>Edit Panel</h3><button class="icon-btn" onclick="closeModal('modal-edit-panel')"><i class="fas fa-times"></i></button></div><input id="edit-p-id" type="hidden" /><div class="form-group"><label>Name</label><input id="edit-p-name" class="form-input" /></div><div class="form-group"><label>Logo</label><input id="edit-p-logo" class="form-input" /></div><div class="form-group"><label>Category</label><input id="edit-p-category" class="form-input" /></div><div class="form-group"><label>Product ID / PID</label><input id="edit-p-pid" class="form-input" /></div><div class="form-group"><label>Reseller Duration String</label><input id="edit-p-duration" class="form-input" /></div><div class="form-group"><label>Android ID (optional — Device-Bound/V1)</label><input id="edit-p-android-id" class="form-input" /></div><div class="form-group"><label>Normal Video URL (.mp4/.webm/.ogg)</label><input id="edit-p-yt" class="form-input" placeholder="https://example.com/video.mp4" /></div><div class="form-group"><label>Update Link</label><input id="edit-p-link" class="form-input" /></div><div class="form-group"><label>Feedback Link</label><input id="edit-p-feedback" class="form-input" /></div><div class="form-group"><label>Description</label><textarea id="edit-p-desc" class="form-input" rows="3"></textarea></div><div style="background:var(--surface-2);padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:20px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-weight:600;">Plans</span><button class="btn btn-outline btn-sm" onclick="window.addEditPlanRow()"><i class="fas fa-plus"></i></button></div><div id="edit-plans-container"></div></div><button class="btn btn-primary btn-block" id="btn-save-edit-panel">Save Changes</button></div></div>
+  <div class="modal-overlay hidden" id="modal-edit-panel"><div class="modal" style="max-width:600px;"><div class="modal-header"><h3>Edit Panel</h3><button class="icon-btn" onclick="closeModal('modal-edit-panel')"><i class="fas fa-times"></i></button></div><input id="edit-p-id" type="hidden" /><div class="form-group"><label>Name</label><input id="edit-p-name" class="form-input" /></div><div class="form-group"><label>Logo</label><input id="edit-p-logo" class="form-input" /></div><div class="form-group"><label>Category</label><input id="edit-p-category" class="form-input" /></div><div class="form-group"><label>Product ID / PID</label><input id="edit-p-pid" class="form-input" /></div><div class="form-group"><label>Android ID (optional — Device-Bound/V1)</label><input id="edit-p-android-id" class="form-input" /></div><div class="form-group"><label>Normal Video URL (.mp4/.webm/.ogg)</label><input id="edit-p-yt" class="form-input" placeholder="https://example.com/video.mp4" /></div><div class="form-group"><label>Update Link</label><input id="edit-p-link" class="form-input" /></div><div class="form-group"><label>Feedback Link</label><input id="edit-p-feedback" class="form-input" /></div><div class="form-group"><label>Description</label><textarea id="edit-p-desc" class="form-input" rows="3"></textarea></div><div style="background:var(--surface-2);padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:20px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-weight:600;">Plans</span><button class="btn btn-outline btn-sm" onclick="window.addEditPlanRow()"><i class="fas fa-plus"></i></button></div><div id="edit-plans-container"></div></div><button class="btn btn-primary btn-block" id="btn-save-edit-panel">Save Changes</button></div></div>
 
   <div class="modal-overlay hidden" id="modal-edit-promo"><div class="modal"><div class="modal-header"><h3>Edit Promotion</h3><button class="icon-btn" onclick="closeModal('modal-edit-promo')"><i class="fas fa-times"></i></button></div><input id="edit-promo-id" type="hidden" /><div class="form-group"><label>Title</label><input id="edit-promo-title" class="form-input" /></div><div class="form-group"><label>Image URL</label><input id="edit-promo-img" class="form-input" /></div><div class="form-group"><label>Link</label><input id="edit-promo-link" class="form-input" /></div><button class="btn btn-primary btn-block" id="btn-save-edit-promo">Save</button></div></div>
 
@@ -1599,17 +1599,16 @@
       document.getElementById('edit-p-category').value = p.category || '';
       document.getElementById('edit-p-yt').value = p.videoUrl || p.video || '';
       document.getElementById('edit-p-pid').value = p.pid || p.productId || '';
-      document.getElementById('edit-p-duration').value = p.durationString || p.resellerDurationString || '';
-      document.getElementById('edit-p-android-id').value = p.androidId || p.android_id || '';
+            document.getElementById('edit-p-android-id').value = p.androidId || p.android_id || '';
       document.getElementById('edit-p-link').value = p.link || '';
       document.getElementById('edit-p-feedback').value = p.feedback || '';
       document.getElementById('edit-p-desc').value = p.description || '';
       let html = '';
-      if (p.plans) Object.values(p.plans).forEach(v => html += `<div class="plan-row"><input class="p-label form-input" placeholder="Plan" value="${v.label || ''}" /><input class="p-price form-input" placeholder="Price" value="${v.price || ''}" type="number" /><input class="p-keys form-input" placeholder="Keys" value="${v.keys || 1}" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button></div>`);
+      if (p.plans) Object.values(p.plans).forEach(v => html += `<div class="plan-row"><input class="p-label form-input" placeholder="Plan" value="${v.label || ''}" /><input class="p-price form-input" placeholder="Price" value="${v.price || ''}" type="number" /><input class="p-duration form-input" placeholder="Reseller Duration String" value="${v.durationString || v.resellerDurationString || ''}" /><input class="p-keys form-input" placeholder="Keys" value="${v.keys || 1}" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button></div>`);
       document.getElementById('edit-plans-container').innerHTML = html;
       openModal('modal-edit-panel');
     };
-    window.addEditPlanRow = () => { const c = document.getElementById('edit-plans-container'); const row = document.createElement('div'); row.className = 'plan-row'; row.innerHTML = `<input class="p-label form-input" placeholder="Plan" /><input class="p-price form-input" placeholder="Price" type="number" /><input class="p-keys form-input" placeholder="Keys" value="1" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>`; c.appendChild(row); };
+    window.addEditPlanRow = () => { const c = document.getElementById('edit-plans-container'); const row = document.createElement('div'); row.className = 'plan-row'; row.innerHTML = `<input class="p-label form-input" placeholder="Plan" /><input class="p-price form-input" placeholder="Price" type="number" /><input class="p-duration form-input" placeholder="Reseller Duration String" /><input class="p-keys form-input" placeholder="Keys" value="1" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>`; c.appendChild(row); };
     document.getElementById('btn-save-edit-panel').onclick = async () => {
       const id = document.getElementById('edit-p-id').value;
       const videoUrl = document.getElementById('edit-p-yt').value.trim();
@@ -1620,11 +1619,11 @@
         const lbl = row.querySelector('.p-label').value.trim();
         const price = parseFloat(row.querySelector('.p-price').value);
         const keys = parseInt(row.querySelector('.p-keys').value) || 1;
-        if (lbl && !isNaN(price)) { plansData[`plan_${i}`] = { label: lbl, price, keys }; ok = true; }
+        const duration = row.querySelector('.p-duration')?.value.trim() || ''; if (lbl && !isNaN(price) && duration) { plansData[`plan_${i}`] = { label: lbl, price, keys, durationString: duration, resellerDurationString: duration }; ok = true; }
       });
-      if (!ok) return showToast('Add at least one valid plan', 'error');
+      if (!ok) return showToast('Add at least one valid plan with Reseller Duration String', 'error');
       showLoader();
-      try { await update(ref(db, `panels/${id}`), { name: document.getElementById('edit-p-name').value, logo: document.getElementById('edit-p-logo').value, category: document.getElementById('edit-p-category').value, videoUrl: videoUrl, pid: document.getElementById('edit-p-pid').value.trim(), durationString: document.getElementById('edit-p-duration').value.trim(), androidId: document.getElementById('edit-p-android-id').value.trim(), link: document.getElementById('edit-p-link').value, feedback: document.getElementById('edit-p-feedback').value, description: document.getElementById('edit-p-desc').value, plans: plansData }); showToast('Updated'); closeModal('modal-edit-panel'); loadSection('manage-panels'); } catch (e) { showToast('Error', 'error'); hideLoader(); }
+      try { await update(ref(db, `panels/${id}`), { name: document.getElementById('edit-p-name').value, logo: document.getElementById('edit-p-logo').value, category: document.getElementById('edit-p-category').value, videoUrl: videoUrl, pid: document.getElementById('edit-p-pid').value.trim(), androidId: document.getElementById('edit-p-android-id').value.trim(), link: document.getElementById('edit-p-link').value, feedback: document.getElementById('edit-p-feedback').value, description: document.getElementById('edit-p-desc').value, plans: plansData }); showToast('Updated'); closeModal('modal-edit-panel'); loadSection('manage-panels'); } catch (e) { showToast('Error', 'error'); hideLoader(); }
     };
 
     // --- Add Panel ---
@@ -1653,7 +1652,7 @@
       const c = document.getElementById('plans-container');
       const row = document.createElement('div');
       row.className = 'plan-row';
-      row.innerHTML = `<input class="p-label form-input" placeholder="Plan" /><input class="p-price form-input" placeholder="Price" type="number" /><input class="p-keys form-input" placeholder="Keys" value="1" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();updateLivePreview();"><i class="fas fa-trash"></i></button>`;
+      row.innerHTML = `<input class="p-label form-input" placeholder="Plan" /><input class="p-price form-input" placeholder="Price" type="number" /><input class="p-duration form-input" placeholder="Reseller Duration String" /><input class="p-keys form-input" placeholder="Keys" value="1" type="number" /><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();updateLivePreview();"><i class="fas fa-trash"></i></button>`;
       c.appendChild(row);
     };
     document.getElementById('btn-submit-panel').onclick = async () => {
@@ -1662,8 +1661,7 @@
       const category = document.getElementById('add-p-category').value.trim();
       const videoUrl = document.getElementById('add-p-yt').value.trim();
       const pid = document.getElementById('add-p-pid').value.trim();
-      const durationString = document.getElementById('add-p-duration').value.trim();
-      const link = document.getElementById('add-p-link').value.trim();
+            const link = document.getElementById('add-p-link').value.trim();
       const feedback = document.getElementById('add-p-feedback').value.trim();
       const desc = document.getElementById('add-p-desc').value.trim();
       if (!name || !link) return showToast('Name and Link required', 'error');
@@ -1674,12 +1672,12 @@
         const lbl = row.querySelector('.p-label').value.trim();
         const price = parseFloat(row.querySelector('.p-price').value);
         const keys = parseInt(row.querySelector('.p-keys').value) || 1;
-        if (lbl && !isNaN(price)) { plansData[`plan_${i}`] = { label: lbl, price, keys, durationString }; ok = true; }
+        const duration = row.querySelector('.p-duration')?.value.trim() || ''; if (lbl && !isNaN(price) && duration) { plansData[`plan_${i}`] = { label: lbl, price, keys, durationString: duration, resellerDurationString: duration }; ok = true; }
       });
-      if (!ok) return showToast('Add at least one valid plan', 'error');
+      if (!ok) return showToast('Add at least one valid plan with Reseller Duration String', 'error');
       showLoader();
       try {
-        await push(ref(db, 'panels'), { name, logo, category, videoUrl, pid, durationString, androidId: document.getElementById('add-p-android-id').value.trim(), link, feedback, description: desc, status: 'active', plans: plansData, featured:false, badge:'' });
+        await push(ref(db, 'panels'), { name, logo, category, videoUrl, pid, androidId: document.getElementById('add-p-android-id').value.trim(), link, feedback, description: desc, status: 'active', plans: plansData, featured:false, badge:'' });
         showToast('Panel added'); document.querySelector('.nav-item[data-target="manage-panels"]').click();
       } catch (e) { showToast('Error', 'error'); hideLoader(); }
     };
