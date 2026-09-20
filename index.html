@@ -2140,7 +2140,187 @@
         alert("Database connection failed. Please check configuration.");
     }
 
-    // --- STATE ---
+
+        // --- FIREBASE AUTH CONTROLLER ---
+        function setAuthView(loggedIn) {
+            if (loggedIn) {
+                authScreen.style.display = 'none';
+                mainApp.style.display = 'block';
+            } else {
+                mainApp.style.display = 'none';
+                authScreen.style.display = 'flex';
+            }
+        }
+
+        async function loadCurrentUserData(user) {
+            if (!user || !db) return;
+            try {
+                const snap = await get(ref(db, 'users/' + user.uid));
+                if (snap.exists()) {
+                    userData = { balance: 0, ...snap.val() };
+                } else {
+                    userData = {
+                        uid: user.uid,
+                        email: user.email || '',
+                        name: user.displayName || '',
+                        balance: 0,
+                        createdAt: Date.now()
+                    };
+                    await set(ref(db, 'users/' + user.uid), userData);
+                }
+
+                const balanceEl = document.getElementById('nav-balance');
+                if (balanceEl) {
+                    balanceEl.textContent = `₹${Number(userData.balance || 0).toFixed(2)}`;
+                }
+
+                const emailEls = document.querySelectorAll('[data-user-email]');
+                emailEls.forEach(el => el.textContent = user.email || '');
+
+                const nameEls = document.querySelectorAll('[data-user-name]');
+                nameEls.forEach(el => el.textContent =
+                    userData.name || user.displayName || (user.email || '').split('@')[0] || 'User'
+                );
+            } catch (err) {
+                console.error('User profile load error:', err);
+                showToast('Unable to load your profile. Check Firebase Database rules.', 'error');
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user || null;
+
+            if (!user) {
+                userData = { balance: 0 };
+                setAuthView(false);
+                hideLoader();
+                return;
+            }
+
+            setAuthView(true);
+            showLoader();
+            await loadCurrentUserData(user);
+
+            try {
+                if (typeof performSecurityCheck === 'function' && !securityCompleted) {
+                    await performSecurityCheck();
+                }
+            } catch (e) {
+                console.warn('Security check:', e);
+            }
+
+            hideLoader();
+
+            if (typeof fetchKeys === 'function') {
+                try { fetchKeys(); } catch (e) { console.warn('fetchKeys:', e); }
+            }
+            if (typeof loadPanels === 'function') {
+                try { loadPanels(); } catch (e) { console.warn('loadPanels:', e); }
+            }
+        });
+
+        document.getElementById('btn-login')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email')?.value.trim();
+            const password = document.getElementById('login-pass')?.value || '';
+            const btn = document.getElementById('btn-login');
+
+            if (!email || !password) {
+                showToast('Enter your email and password.', 'error');
+                return;
+            }
+
+            if (!auth) {
+                showToast('Firebase Authentication is not initialized.', 'error');
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast('Login successful!', 'success');
+            } catch (err) {
+                console.error('LOGIN ERROR:', err);
+                const code = err?.code || '';
+                const messages = {
+                    'auth/invalid-email': 'Invalid email address.',
+                    'auth/invalid-credential': 'Email or password is incorrect.',
+                    'auth/user-not-found': 'No account exists with this email.',
+                    'auth/wrong-password': 'Incorrect password.',
+                    'auth/too-many-requests': 'Too many attempts. Try again later.',
+                    'auth/user-disabled': 'This account has been disabled.'
+                };
+                showToast(messages[code] || (err?.message || 'Login failed.'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span><i class="fas fa-arrow-right"></i> Login</span>';
+            }
+        });
+
+        document.getElementById('btn-signup')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('signup-email')?.value.trim();
+            const password = document.getElementById('signup-pass')?.value || '';
+            const btn = document.getElementById('btn-signup');
+
+            if (!email || !password) {
+                showToast('Enter email and password.', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters.', 'error');
+                return;
+            }
+            if (!auth || !db) {
+                showToast('Firebase is not initialized.', 'error');
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+
+                const credential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = credential.user;
+
+                await set(ref(db, 'users/' + user.uid), {
+                    uid: user.uid,
+                    email: user.email || email,
+                    name: email.split('@')[0],
+                    balance: 0,
+                    createdAt: Date.now()
+                });
+
+                showToast('Account created successfully!', 'success');
+            } catch (err) {
+                console.error('SIGNUP ERROR:', err);
+                const code = err?.code || '';
+                const messages = {
+                    'auth/email-already-in-use': 'This email is already registered.',
+                    'auth/invalid-email': 'Invalid email address.',
+                    'auth/weak-password': 'Password is too weak.'
+                };
+                showToast(messages[code] || (err?.message || 'Signup failed.'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span><i class="fas fa-user-plus"></i> Sign Up</span>';
+            }
+        });
+
+        document.getElementById('btn-logout')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await signOut(auth);
+                showToast('Logged out.', 'success');
+            } catch (err) {
+                console.error('LOGOUT ERROR:', err);
+            }
+        });
+
+        // --- STATE ---
     let currentUser = null;
     let userData = { balance: 0 };
     
@@ -2576,6 +2756,17 @@
         }
     }, 2000);
 
+    // User menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    if (menuToggle && dropdownMenu) {
+        menuToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+    }
+
     // Close dropdown on outside click
     document.addEventListener('click', (e) => {
         const menu = document.getElementById('dropdown-menu');
@@ -2600,21 +2791,6 @@
     });
 
     console.log('✅ YADIP MODZ App initialized with enhanced security system');
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const t = document.getElementById('menu-toggle');
-  const m = document.getElementById('dropdown-menu');
-  if (t && m && !t.dataset.yadipMenuBound) {
-    t.dataset.yadipMenuBound = '1';
-    t.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      m.classList.toggle('active');
-    });
-  }
-});
 </script>
 </body>
 </html>
