@@ -1,6 +1,6 @@
 {
   "name": "yadip-premium-production",
-  "version": "4.0.0",
+  "version": "4.2.0",
   "private": true,
   "description": "YADIP website + secure reseller v1 buy API + FamGateway payment backend",
   "main": "backend/server.js",
