@@ -227,3 +227,11 @@ VPS/managed Node hosting पर यही `npm install && npm start` deployment 
 8. केवल verified payment पर reseller `action=buy` call होता है।
 9. Returned key local order + Firebase में save होती है।
 10. Same order refresh/webhook से duplicate key नहीं बनती।
+
+
+## v4.2 admin update
+- Payment Settings now includes direct FamGateway Create URL, Verify URL, API Key, Merchant ID, redirect URL, and webhook URL controls.
+- FamGateway settings are saved through the authenticated admin backend instead of being stored as frontend source values.
+- Empty database secret settings now fall back to the corresponding Render environment variables, so `FAMPAY_API_KEY` and reseller credentials remain usable when no admin override is saved.
+- Render configuration now declares the reseller and FamGateway environment variables as deploy-time secrets.
+- Pricing plans require an individual Reseller Duration String; add/edit validation prevents incomplete or duplicate plan names.
