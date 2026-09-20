@@ -39,6 +39,10 @@ const getSetting = (key, fallback="") => {
 const setSetting = (key, value) => sql.prepare(
   "INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value"
 ).run(key, String(value ?? ""));
+const effectiveSetting = (key, fallback="") => {
+  const value = getSetting(key, "");
+  return String(value ?? "").trim() !== "" ? value : fallback;
+};
 const now = () => new Date().toISOString();
 
 // Safe non-secret defaults. Secrets remain in environment variables or protected admin settings.
@@ -82,7 +86,20 @@ function publicSettings() {
     "paymentApiUrl","paymentVerifyUrl","paymentApiKey","paymentSecret","merchantId","callbackUrl","paymentWebhookUrl","defaultPid",
     "defaultDuration","videoUrl"
   ];
-  const out={}; for (const k of keys) out[k]=getSetting(k,"");
+  const envFallbacks = {
+    resellerApiUrl: process.env.RESELLER_API_URL || "",
+    resellerApiKey: process.env.RESELLER_API_KEY || "",
+    resellerMasterKey: process.env.RESELLER_MASTER_KEY || "",
+    defaultPid: process.env.RESELLER_DEFAULT_PID || "",
+    defaultDuration: process.env.RESELLER_DEFAULT_DURATION || "",
+    paymentApiUrl: process.env.FAMPAY_CREATE_ORDER_URL || "https://famgateway.in/api/create-order",
+    paymentVerifyUrl: process.env.FAMPAY_VERIFY_ORDER_URL || "https://famgateway.in/api/verify-order.php",
+    paymentApiKey: process.env.FAMPAY_API_KEY || "",
+    paymentSecret: process.env.FAMPAY_WEBHOOK_SECRET || "",
+    callbackUrl: process.env.FAMPAY_REDIRECT_URL || "",
+    paymentWebhookUrl: process.env.FAMPAY_WEBHOOK_URL || ""
+  };
+  const out={}; for (const k of keys) out[k]=effectiveSetting(k, envFallbacks[k] || "");
   return out;
 }
 function safeJson(s) { try { return s ? JSON.parse(s) : {}; } catch { return {}; } }
@@ -117,7 +134,8 @@ async function getProduct(productId) {
 function buildResellerPayload(order, product) {
   const extra = safeJson(getSetting("resellerExtraParams",""));
   const pid = order.pid || product.pid || product.productId || getSetting("defaultPid");
-  const duration = order.duration_string || product.durationString || product.resellerDurationString || getSetting("defaultDuration");
+  const plan = order.plan_key && product.plans ? product.plans[order.plan_key] : null;
+  const duration = order.duration_string || plan?.durationString || plan?.resellerDurationString || product.durationString || product.resellerDurationString || getSetting("defaultDuration");
   const payload = {
     ...extra,
     action: "buy",
@@ -145,8 +163,8 @@ async function generateKey(orderId) {
   if (order.key_value) return order.key_value;
   const product = await getProduct(order.product_id);
   const url = getSetting("resellerApiUrl", process.env.RESELLER_API_URL || "https://bantibhaiya.to/api/reseller_v1.php");
-  const apiKey = getSetting("resellerApiKey", process.env.RESELLER_API_KEY || "");
-  const master = getSetting("resellerMasterKey", process.env.RESELLER_MASTER_KEY || "");
+  const apiKey = effectiveSetting("resellerApiKey", process.env.RESELLER_API_KEY || "");
+  const master = effectiveSetting("resellerMasterKey", process.env.RESELLER_MASTER_KEY || "");
   if (!url || !apiKey || !master) throw new Error("Reseller API URL, API Key and Master Key are required");
   const payload = buildResellerPayload(order,product);
   if (!payload.product_id) throw new Error("Reseller Product PID is not configured");
@@ -175,10 +193,10 @@ async function generateKey(orderId) {
 }
 
 async function createPayment(order) {
-  const url=getSetting("paymentApiUrl", process.env.FAMPAY_CREATE_ORDER_URL || "https://famgateway.in/api/create-order");
-  const verifyUrl=getSetting("paymentVerifyUrl", process.env.FAMPAY_VERIFY_ORDER_URL || "https://famgateway.in/api/verify-order.php");
+  const url=effectiveSetting("paymentApiUrl", process.env.FAMPAY_CREATE_ORDER_URL || "https://famgateway.in/api/create-order");
+  const verifyUrl=effectiveSetting("paymentVerifyUrl", process.env.FAMPAY_VERIFY_ORDER_URL || "https://famgateway.in/api/verify-order.php");
   if (!url) throw new Error("FamGateway create-order URL is not configured");
-  const apiKey=getSetting("paymentApiKey", process.env.FAMPAY_API_KEY || "");
+  const apiKey=effectiveSetting("paymentApiKey", process.env.FAMPAY_API_KEY || "");
   if (!apiKey) throw new Error("FamGateway API Key is not configured");
   const base = process.env.PUBLIC_BASE_URL || "";
   const webhook = getSetting("paymentWebhookUrl", process.env.FAMPAY_WEBHOOK_URL || `${base}/api/payment/webhook`);
@@ -203,9 +221,9 @@ async function createPayment(order) {
   };
 }
 async function verifyPayment(order,paymentId) {
-  const url=getSetting("paymentVerifyUrl", process.env.FAMPAY_VERIFY_ORDER_URL || "https://famgateway.in/api/verify-order.php");
+  const url=effectiveSetting("paymentVerifyUrl", process.env.FAMPAY_VERIFY_ORDER_URL || "https://famgateway.in/api/verify-order.php");
   if (!url) throw new Error("FamGateway verify-order URL is not configured");
-  const apiKey=getSetting("paymentApiKey", process.env.FAMPAY_API_KEY || "");
+  const apiKey=effectiveSetting("paymentApiKey", process.env.FAMPAY_API_KEY || "");
   if (!apiKey) throw new Error("FamGateway API Key is not configured");
   if (!paymentId) throw new Error("FamGateway order_id is missing");
   const u=new URL(url);
@@ -285,7 +303,7 @@ app.post("/api/orders",verifyUser,async(req,res)=>{
     amount=Number(plan.price||0);
     if(amount<=0) return res.status(400).json({error:"Invalid product price"});
     const pid=product.pid || product.productId || getSetting("defaultPid");
-    const duration=product.durationString || product.resellerDurationString || plan.durationString || plan.label || getSetting("defaultDuration");
+    const duration=plan.durationString || plan.resellerDurationString || product.durationString || product.resellerDurationString || plan.label || getSetting("defaultDuration");
     const id="ORD"+Date.now()+crypto.randomBytes(3).toString("hex").toUpperCase();
     const created=now();
     sql.prepare(`INSERT INTO orders(id,uid,email,product_id,plan_key,pid,duration_string,amount,status,api_status,created_at,updated_at)
