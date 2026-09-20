@@ -1776,10 +1776,10 @@
             <button class="menu-btn" id="menu-toggle"><i class="fas fa-bars"></i></button>
         </div>
         <div class="dropdown" id="dropdown-menu">
-            <div class="dropdown-item" onclick="navigate('home'); document.getElementById('dropdown-menu')?.classList.remove('active')"><i class="fas fa-th-large"></i> Dashboard</div>
-            <div class="dropdown-item" onclick="navigate('wallet'); document.getElementById('dropdown-menu')?.classList.remove('active')"><i class="fas fa-wallet"></i> Wallet</div>
-            <div class="dropdown-item" onclick="navigate('history'); document.getElementById('dropdown-menu')?.classList.remove('active')"><i class="fas fa-key"></i> My Keys</div>
-            <div class="dropdown-item" onclick="navigate('profile'); document.getElementById('dropdown-menu')?.classList.remove('active')"><i class="fas fa-user"></i> Profile</div>
+            <div class="dropdown-item" onclick="navigate('home')"><i class="fas fa-th-large"></i> Dashboard</div>
+            <div class="dropdown-item" onclick="navigate('wallet')"><i class="fas fa-wallet"></i> Wallet</div>
+            <div class="dropdown-item" onclick="navigate('history')"><i class="fas fa-key"></i> My Keys</div>
+            <div class="dropdown-item" onclick="navigate('profile')"><i class="fas fa-user"></i> Profile</div>
             <div class="dropdown-divider"></div>
             <div class="dropdown-item danger" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
@@ -2143,114 +2143,7 @@
     // --- STATE ---
     let currentUser = null;
     let userData = { balance: 0 };
-
-    // --- AUTHENTICATION (fixed) ---
-    const loginBtn = document.getElementById('btn-login');
-    const signupBtn = document.getElementById('btn-signup');
-    const loginBox = document.getElementById('login-box');
-    const signupBox = document.getElementById('signup-box');
-
-    function setAuthLoading(button, loading) {
-        if (!button) return;
-        button.disabled = loading;
-        button.style.opacity = loading ? '0.65' : '1';
-        button.style.pointerEvents = loading ? 'none' : 'auto';
-    }
-
-    function friendlyAuthError(error) {
-        const code = error?.code || '';
-        const messages = {
-            'auth/invalid-credential': 'Invalid email or password.',
-            'auth/invalid-login-credentials': 'Invalid email or password.',
-            'auth/user-not-found': 'Account not found. Please create an account first.',
-            'auth/wrong-password': 'Invalid email or password.',
-            'auth/invalid-email': 'Please enter a valid email address.',
-            'auth/email-already-in-use': 'This email is already registered. Please login.',
-            'auth/weak-password': 'Password must be at least 6 characters.',
-            'auth/too-many-requests': 'Too many attempts. Please try again later.',
-            'auth/network-request-failed': 'Network error. Check your internet connection.',
-            'auth/operation-not-allowed': 'Email/password login is disabled in Firebase Authentication.'
-        };
-        return messages[code] || error?.message || 'Authentication failed. Please try again.';
-    }
-
-    loginBtn?.addEventListener('click', async () => {
-        const email = document.getElementById('login-email')?.value.trim();
-        const password = document.getElementById('login-pass')?.value || '';
-        if (!email || !password) return showToast('Enter email and password.', 'error');
-        if (!auth) return showToast('Firebase Authentication is not initialized.', 'error');
-
-        setAuthLoading(loginBtn, true);
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            showToast('Login successful.', 'success');
-        } catch (error) {
-            console.error('Login error:', error);
-            showToast(friendlyAuthError(error), 'error');
-        } finally {
-            setAuthLoading(loginBtn, false);
-        }
-    });
-
-    signupBtn?.addEventListener('click', async () => {
-        const email = document.getElementById('signup-email')?.value.trim();
-        const password = document.getElementById('signup-pass')?.value || '';
-        if (!email || !password) return showToast('Enter email and password.', 'error');
-        if (password.length < 6) return showToast('Password must be at least 6 characters.', 'error');
-        if (!auth || !db) return showToast('Firebase is not initialized.', 'error');
-
-        setAuthLoading(signupBtn, true);
-        try {
-            const credential = await createUserWithEmailAndPassword(auth, email, password);
-            await set(ref(db, `users/${credential.user.uid}`), {
-                email, balance: 0, createdAt: Date.now()
-            });
-            showToast('Account created successfully.', 'success');
-        } catch (error) {
-            console.error('Signup error:', error);
-            showToast(friendlyAuthError(error), 'error');
-        } finally {
-            setAuthLoading(signupBtn, false);
-        }
-    });
-
-    document.getElementById('go-to-signup')?.addEventListener('click', () => {
-        loginBox?.classList.add('hidden');
-        signupBox?.classList.remove('hidden');
-    });
-
-    document.getElementById('go-to-login')?.addEventListener('click', () => {
-        signupBox?.classList.add('hidden');
-        loginBox?.classList.remove('hidden');
-    });
-
-    if (auth) {
-        onAuthStateChanged(auth, async (user) => {
-            currentUser = user || null;
-            if (!user) {
-                mainApp?.classList.add('hidden');
-                authScreen?.classList.remove('hidden');
-                return;
-            }
-            try {
-                const snap = await get(ref(db, `users/${user.uid}`));
-                userData = snap.exists() ? snap.val() : { balance: 0, email: user.email };
-                if (!snap.exists()) {
-                    await set(ref(db, `users/${user.uid}`), {
-                        email: user.email || '', balance: 0, createdAt: Date.now()
-                    });
-                }
-                authScreen?.classList.add('hidden');
-                mainApp?.classList.remove('hidden');
-            } catch (error) {
-                console.error('User profile load error:', error);
-                showToast('Login succeeded, but user profile could not be loaded.', 'error');
-                authScreen?.classList.add('hidden');
-                mainApp?.classList.remove('hidden');
-            }
-        });
-    }
-
+    
     window.MANUAL_UPI = "";
     let securityCompleted = false;
 
@@ -2683,18 +2576,6 @@
         }
     }, 2000);
 
-    // Menu toggle — fixed
-    const menuToggle = document.getElementById('menu-toggle');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-
-    if (menuToggle && dropdownMenu) {
-        menuToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('active');
-        });
-    }
-
     // Close dropdown on outside click
     document.addEventListener('click', (e) => {
         const menu = document.getElementById('dropdown-menu');
@@ -2719,6 +2600,21 @@
     });
 
     console.log('✅ YADIP MODZ App initialized with enhanced security system');
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const t = document.getElementById('menu-toggle');
+  const m = document.getElementById('dropdown-menu');
+  if (t && m && !t.dataset.yadipMenuBound) {
+    t.dataset.yadipMenuBound = '1';
+    t.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      m.classList.toggle('active');
+    });
+  }
+});
 </script>
 </body>
 </html>
