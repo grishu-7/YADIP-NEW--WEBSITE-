@@ -18,3 +18,25 @@ services:
         sync: false
       - key: OUTBOUND_TIMEOUT_MS
         value: "15000"
+      - key: RESELLER_API_URL
+        sync: false
+      - key: RESELLER_API_KEY
+        sync: false
+      - key: RESELLER_MASTER_KEY
+        sync: false
+      - key: RESELLER_DEFAULT_PID
+        sync: false
+      - key: RESELLER_DEFAULT_DURATION
+        sync: false
+      - key: FAMPAY_CREATE_ORDER_URL
+        sync: false
+      - key: FAMPAY_VERIFY_ORDER_URL
+        sync: false
+      - key: FAMPAY_API_KEY
+        sync: false
+      - key: FAMPAY_WEBHOOK_SECRET
+        sync: false
+      - key: FAMPAY_WEBHOOK_URL
+        sync: false
+      - key: FAMPAY_REDIRECT_URL
+        sync: false
