@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<title>YADIP | MODZ</title>
+<title>YADIP  | MODZ</title>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -11,8 +11,6 @@
 <!-- FontAwesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 
-<!-- ZapUPI Payment Gateway -->
-<script src="https://zapupi.com/single-html-web-kit.js"></script>
 
 <style>
     /* ============================================
@@ -1178,20 +1176,116 @@
         letter-spacing: 1px;
         color: var(--accent-green);
         word-break: break-all;
+        transition: var(--transition);
     }
-    .history-card .key-box .copy-key {
-        padding: 4px 16px;
-        border: 1.5px solid var(--accent-green);
+    .history-card .key-box .key-text.masked {
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        font-weight: 500;
+    }
+    .history-card .key-box .key-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .history-card .key-box .key-actions button {
+        padding: 4px 14px;
         border-radius: var(--radius-sm);
-        background: transparent;
-        color: var(--accent-green);
         font-weight: 600;
         font-size: 12px;
         transition: var(--transition);
-        flex-shrink: 0;
+        border: 1.5px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
-    .history-card .key-box .copy-key:hover { background: rgba(52, 211, 153, 0.06); }
+    .history-card .key-box .key-actions button:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .key-box .key-actions .reveal-key {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .key-box .key-actions .reveal-key:hover { background: rgba(79, 140, 255, 0.06); }
+    .history-card .key-box .key-actions .copy-key {
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+    }
+    .history-card .key-box .key-actions .copy-key:hover { background: rgba(52, 211, 153, 0.06); }
+
+    /* History download link box */
+    .history-card .download-link-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        background: rgba(79, 140, 255, 0.04);
+        border: 1px solid rgba(79, 140, 255, 0.1);
+        border-radius: var(--radius-sm);
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+    .history-card .download-link-box .dl-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .history-card .download-link-box .dl-label i { color: var(--accent-blue); }
+    .history-card .download-link-box .dl-url {
+        flex: 1;
+        font-size: 12px;
+        color: var(--accent-blue);
+        word-break: break-all;
+        font-family: 'Courier New', monospace;
+        min-width: 100px;
+    }
+    .history-card .download-link-box .dl-actions {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+    .history-card .download-link-box .dl-actions button {
+        padding: 3px 12px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 10px;
+        transition: var(--transition);
+        border: 1.5px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .history-card .download-link-box .dl-actions button:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .download-link-box .dl-actions .access-link {
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+    }
+    .history-card .download-link-box .dl-actions .access-link:hover { background: rgba(52, 211, 153, 0.06); }
+    .history-card .download-link-box .dl-actions .copy-link {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+    .history-card .download-link-box .dl-actions .copy-link:hover { background: rgba(79, 140, 255, 0.06); }
+    .history-card .download-link-box .no-link {
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 500;
+    }
 
     /* ============================================
        PROFILE
@@ -1575,6 +1669,7 @@
         .modal .action-row { flex-direction: column; }
     }
 </style>
+<script src="/api-config.js"></script>
 </head>
 <body>
 
@@ -1614,7 +1709,7 @@
         <div class="auth-card" id="login-box">
             <div class="brand">
                 <div class="logo-icon">FF</div>
-                <h1>YADIP <span>MODZ</span></h1>
+                <h1>GYX<span>MODZ</span></h1>
                 <p>Welcome back to your premium dashboard</p>
             </div>
             <div class="input-group">
@@ -1674,7 +1769,7 @@
         <div class="brand">
             <div class="brand-icon">FF</div>
             <img id="site-logo" src="" style="display:none;"/>
-            <span id="site-name">YADIP  MODZ</span>
+            <span id="site-name">YADIP MODZ</span>
         </div>
         <div class="nav-actions">
             <div class="balance-pill"><i class="fas fa-wallet"></i> ₹<span id="nav-balance">0.00</span></div>
@@ -1987,15 +2082,14 @@
 <div class="modal-overlay hidden" id="modal-success">
     <div class="modal" style="text-align:center;">
         <i class="fas fa-check-circle success-icon"></i>
-        <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;">Purchase Success!</h2>
-        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">Your premium key is ready.</p>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;">Order Placed!</h2>
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">Your order is pending admin approval. Your license key will appear in <strong>My Keys</strong> once delivered.</p>
         <div class="key-display">
-            <span class="key-label">License Key</span>
-            <div class="key-value" id="modal-key-display">XXXXXX</div>
+            <span class="key-label">Status</span>
+            <div class="key-value" id="modal-key-display">Pending Approval</div>
         </div>
         <div class="action-row">
-            <button class="btn btn-primary-modal" id="modal-btn-access"><i class="fas fa-download"></i> Access Tool</button>
-            <button class="btn btn-outline-modal" onclick="copyToClipboard('modal-key-display','License Key')"><i class="fas fa-copy"></i> Copy</button>
+            <button class="btn btn-primary-modal" id="modal-btn-access"><i class="fas fa-key"></i> View My Keys</button>
             <button class="btn btn-outline-modal" onclick="closeModal('modal-success')">Close</button>
         </div>
     </div>
@@ -2033,8 +2127,7 @@
   projectId: "ai-website-8a593",
   storageBucket: "ai-website-8a593.firebasestorage.app",
   messagingSenderId: "915880393210",
-  appId: "1:915880393210:web:b673845708ea3efce40c43",
-  measurementId: "G-C6B83EK2V5"
+  appId: "1:915880393210:web:b673845708ea3efce40c43"
 };
 
     let app, auth, db;
@@ -2050,7 +2143,7 @@
     // --- STATE ---
     let currentUser = null;
     let userData = { balance: 0 };
-    window.ZAP_KEY = "";
+    
     window.MANUAL_UPI = "";
     let securityCompleted = false;
 
@@ -2150,8 +2243,8 @@
             showToast("Element not found", "error");
             return;
         }
-        const text = el.innerText || el.textContent;
-        if (!text || text === 'Loading...' || text === 'XXXXXX' || text === 'Not Set' || text === '...') {
+        const text = el.dataset.key || el.innerText || el.textContent;
+        if (!text || text === 'Loading...' || text === 'XXXXXX' || text === 'Not Set' || text === '...' || text === '••••••••••••') {
             showToast("Nothing to copy", "warning");
             return;
         }
@@ -2232,631 +2325,37 @@
         if (section) section.classList.remove('hidden');
     };
 
-    // --- ZAPUPI PAYMENT SYSTEM ---
+    // --- SECURE PAYMENT SYSTEM ---
     let paymentPollInterval = null;
-
-    function startPaymentWatcher(orderId) {
-        if (paymentPollInterval) clearInterval(paymentPollInterval);
-        if (!localStorage.getItem("pending_zap_order")) {
-            localStorage.setItem("pending_zap_order", orderId);
-            localStorage.setItem("pending_zap_time", Date.now());
-        }
-        paymentPollInterval = setInterval(() => {
-            const startTime = parseInt(localStorage.getItem("pending_zap_time") || Date.now());
-            if (Date.now() - startTime > 300000) {
-                clearInterval(paymentPollInterval);
-                localStorage.removeItem("pending_zap_order");
-                localStorage.removeItem("pending_zap_time");
-                return;
-            }
-            if (!window.ZAP_KEY) return;
-            try {
-                ZapUPI.orderStatus({ zap_key: window.ZAP_KEY, order_id: orderId }, {
-                    onResponse: async (oid, data) => {
-                        if (data && data.data) {
-                            if (data.data.status === "Success") {
-                                clearInterval(paymentPollInterval);
-                                localStorage.removeItem("pending_zap_order");
-                                localStorage.removeItem("pending_zap_time");
-                                await processSuccessfulPayment(orderId, data.data);
-                            } else if (data.data.status === "Failed") {
-                                clearInterval(paymentPollInterval);
-                                localStorage.removeItem("pending_zap_order");
-                                localStorage.removeItem("pending_zap_time");
-                                await updatePaymentStatus(orderId, "failed");
-                                showToast("Payment Failed. Order: " + orderId, "error");
-                            }
-                        }
-                    },
-                    onError: (err) => console.log("Watcher error:", err)
-                });
-            } catch(e) {
-                console.log("Poll error:", e);
-            }
-        }, 5000);
-    }
-
-    if (typeof ZapUPI !== 'undefined' && ZapUPI.setPaymentCallbacks) {
-        ZapUPI.setPaymentCallbacks({
-            onSuccess: async (orderId) => {
-                showToast("Payment Success! Processing...", "success");
-                if (!localStorage.getItem("pending_zap_order")) startPaymentWatcher(orderId);
-            },
-            onFailed: async (orderId) => {
-                showToast("Payment Failed. Order: " + orderId, "error");
-                await updatePaymentStatus(orderId, "failed");
-            },
-            onTimeout: async (orderId) => {
-                showToast("Payment Timed Out.", "warning");
-                await updatePaymentStatus(orderId, "failed");
-            }
+    async function createDepositPayment(amount, phone) {
+        const result = await backendFetch('/api/deposits', {
+            method:'POST', body:JSON.stringify({amount:Number(amount), phone})
         });
+        return result;
     }
-
-    async function processSuccessfulPayment(orderId, gatewayData) {
-        if (!currentUser) return;
-        const amount = parseFloat(gatewayData.amount);
-        const txRef = ref(db, `transactions/${currentUser.uid}/${orderId}`);
+    async function checkDeposit(orderId) {
         try {
-            const result = await runTransaction(txRef, (tx) => {
-                if (tx && tx.status === "pending") {
-                    tx.status = "success";
-                    tx.txn_id = gatewayData.txn_id;
-                    tx.utr = gatewayData.utr;
-                    return tx;
-                }
-                return undefined;
-            });
-            if (result.committed) {
-                await runTransaction(ref(db, `users/${currentUser.uid}/balance`), (bal) => (bal || 0) + amount);
-                await update(ref(db, `gateway_payments/${orderId}`), { status: "approved", txn_id: gatewayData.txn_id, utr: gatewayData.utr });
-                showToast(`Added ₹${amount} to wallet!`, "success");
-            }
-        } catch(e) {
-            console.error("Process payment error:", e);
-        }
+            const r=await backendFetch('/api/deposits/'+encodeURIComponent(orderId));
+            if(r.status==='success' || r.status==='approved') showToast('Payment verified and wallet updated.','success');
+            return r;
+        } catch(e) { return null; }
     }
-
-    async function updatePaymentStatus(orderId, newStatus) {
+    document.getElementById('btn-submit-payment')?.addEventListener('click', async function() {
+        const amt = document.getElementById('add-amount')?.value;
+        const phone = document.getElementById('add-phone')?.value.trim();
+        const btn=this;
+        if(!amt || Number(amt)<=0) return showToast('Enter valid amount','error');
+        if(!phone || phone.length<10) return showToast('Enter valid phone number','error');
+        btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing...';
         try {
-            if (currentUser) {
-                await update(ref(db, `transactions/${currentUser.uid}/${orderId}`), { status: newStatus });
-            }
-            await update(ref(db, `gateway_payments/${orderId}`), { status: newStatus });
-        } catch (e) { console.error(e); }
-    }
-
-    // --- AUTO DEPOSIT ---
-    document.getElementById('btn-submit-payment').addEventListener('click', async function() {
-        const amt = document.getElementById('add-amount').value;
-        const phone = document.getElementById('add-phone').value.trim();
-        const btn = this;
-        if (!window.ZAP_KEY) return showToast("Gateway offline. Contact admin.", "error");
-        if (!amt || amt <= 0) return showToast("Enter valid amount", "error");
-        if (!phone || phone.length < 10) return showToast("Enter valid phone number", "error");
-
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
-        btn.disabled = true;
-        const orderId = "ORD" + Date.now();
-
-        try {
-            await set(ref(db, `transactions/${currentUser.uid}/${orderId}`), {
-                id: orderId, type: "deposit_auto", amount: parseFloat(amt), status: "pending",
-                desc: "Gateway Deposit", date: new Date().toISOString()
-            });
-            await set(ref(db, `gateway_payments/${orderId}`), {
-                uid: currentUser.uid, email: currentUser.email, amount: parseFloat(amt),
-                phone: phone, status: "pending", timestamp: serverTimestamp()
-            });
-            
-            if (typeof ZapUPI !== 'undefined' && ZapUPI.createOrder) {
-                ZapUPI.createOrder({
-                    zap_key: window.ZAP_KEY,
-                    order_id: orderId,
-                    amount: amt,
-                    customer_mobile: phone,
-                    remark: currentUser.uid + " | AutoDeposit"
-                }, {
-                    onResponse: (url, oid, data) => {
-                        btn.innerHTML = `<i class="fas fa-arrow-right"></i> Pay Now`;
-                        btn.disabled = false;
-                        startPaymentWatcher(orderId);
-                        ZapUPI.loadPayment(url);
-                    },
-                    onError: (err) => {
-                        btn.innerHTML = `<i class="fas fa-arrow-right"></i> Pay Now`;
-                        btn.disabled = false;
-                        showToast("Payment gateway error: " + err, "error");
-                    }
-                });
-            } else {
-                showToast("Payment gateway not available", "error");
-                btn.innerHTML = `<i class="fas fa-arrow-right"></i> Pay Now`;
-                btn.disabled = false;
-            }
-        } catch (e) {
-            btn.innerHTML = `<i class="fas fa-arrow-right"></i> Pay Now`;
-            btn.disabled = false;
-            showToast("System error. Try again.", "error");
-        }
+            const r=await createDepositPayment(amt,phone);
+            if(r.redirect_url) window.location.href=r.redirect_url;
+            else showToast('Payment order created. Complete payment using the gateway.','success');
+            if(r.order_id) localStorage.setItem('pending_deposit_id',r.order_id);
+        } catch(e) { showToast(e.message||'Gateway error','error'); }
+        finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Pay Now'; }
     });
-
-    // --- CHECK ORDER STATUS ---
-    document.getElementById('btn-check-status').addEventListener('click', function() {
-        const oid = document.getElementById('status-order-id').value.trim();
-        if (!oid) return showToast("Enter an Order ID", "warning");
-        if (!window.ZAP_KEY) return showToast("Gateway offline", "error");
-        const btn = this;
-        const resultDiv = document.getElementById('status-result');
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-        btn.disabled = true;
-        resultDiv.classList.add('hidden');
-        
-        if (typeof ZapUPI === 'undefined' || !ZapUPI.orderStatus) {
-            showToast("Gateway not available", "error");
-            btn.innerHTML = `Verify`;
-            btn.disabled = false;
-            return;
-        }
-        
-        ZapUPI.orderStatus({ zap_key: window.ZAP_KEY, order_id: oid }, {
-            onResponse: (oid, data) => {
-                btn.innerHTML = `Verify`;
-                btn.disabled = false;
-                if (data && data.data) {
-                    const d = data.data;
-                    document.getElementById('res-oid').innerText = d.order_id || oid;
-                    document.getElementById('res-status').innerText = d.status || 'Unknown';
-                    document.getElementById('res-status').style.color = d.status === "Success" ? "var(--accent-green)" : d.status === "Failed" ? "var(--accent-red)" : "var(--accent-gold)";
-                    document.getElementById('res-amount').innerText = `₹${d.amount || '0'}`;
-                    document.getElementById('res-date').innerText = d.create_at || d.created_at || '-';
-                    resultDiv.classList.remove('hidden');
-                } else {
-                    showToast("No data found for this order", "warning");
-                }
-            },
-            onError: (err) => {
-                btn.innerHTML = `Verify`;
-                btn.disabled = false;
-                showToast("Failed to fetch status: " + err, "error");
-            }
-        });
-    });
-
-    // --- MANUAL DEPOSIT ---
-    document.getElementById('btn-submit-manual').addEventListener('click', async function() {
-        const amt = document.getElementById('manual-amount').value;
-        const utr = document.getElementById('manual-utr').value.trim();
-        const appName = document.getElementById('manual-app').value.trim();
-        const screenshot = document.getElementById('manual-screenshot').value.trim();
-        const btn = this;
-        if (!amt || amt <= 0) return showToast("Enter valid amount", "error");
-        if (!utr || utr.length < 8) return showToast("Enter valid UTR", "error");
-        if (!appName) return showToast("Enter payment app name", "error");
-
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Submitting...`;
-        btn.disabled = true;
-        const txId = "MAN" + Date.now();
-
-        try {
-            await set(ref(db, `transactions/${currentUser.uid}/${txId}`), {
-                id: txId, type: "deposit_manual", amount: parseFloat(amt), status: "pending",
-                desc: `Manual Deposit via ${appName}`, utr: utr, date: new Date().toISOString()
-            });
-            await set(ref(db, `manual_deposits/${txId}`), {
-                uid: currentUser.uid, email: currentUser.email, amount: parseFloat(amt),
-                utr: utr, app: appName, screenshot: screenshot, status: "pending", timestamp: serverTimestamp()
-            });
-            showToast("Deposit submitted! Awaiting admin approval.");
-            document.getElementById('manual-amount').value = '';
-            document.getElementById('manual-utr').value = '';
-            document.getElementById('manual-app').value = '';
-            document.getElementById('manual-screenshot').value = '';
-        } catch (e) {
-            showToast("Error submitting request", "error");
-        } finally {
-            btn.innerHTML = `<i class="fas fa-paper-plane"></i> Submit Request`;
-            btn.disabled = false;
-        }
-    });
-
-    // --- CRYPTO DEPOSIT ---
-    window.submitCryptoDeposit = async function() {
-        const amt = document.getElementById('crypto-amount').value;
-        const hash = document.getElementById('crypto-hash').value.trim();
-        const screenshot = document.getElementById('crypto-screenshot').value.trim();
-        const note = document.getElementById('crypto-note').value.trim();
-        const btn = document.getElementById('btn-submit-crypto');
-        if (!amt || amt <= 0) return showToast("Enter valid amount", "error");
-        if (!hash || hash.length < 10) return showToast("Enter valid transaction hash", "error");
-        if (!screenshot) return showToast("Screenshot URL required", "error");
-
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Submitting...`;
-        btn.disabled = true;
-        const txId = "CRY" + Date.now();
-
-        try {
-            await set(ref(db, `transactions/${currentUser.uid}/${txId}`), {
-                id: txId, type: "deposit_crypto", amount: parseFloat(amt), status: "pending",
-                desc: "Crypto Deposit (USDT)", hash: hash, date: new Date().toISOString()
-            });
-            await set(ref(db, `crypto_deposits/${txId}`), {
-                uid: currentUser.uid, email: currentUser.email, amount: parseFloat(amt),
-                hash: hash, screenshot: screenshot, note: note, status: "pending", timestamp: serverTimestamp()
-            });
-            showToast("Crypto deposit submitted!");
-            document.getElementById('crypto-amount').value = '';
-            document.getElementById('crypto-hash').value = '';
-            document.getElementById('crypto-screenshot').value = '';
-            document.getElementById('crypto-note').value = '';
-            closeModal('modal-crypto-deposit');
-        } catch (e) {
-            showToast("Error submitting request", "error");
-        } finally {
-            btn.innerHTML = `Submit`;
-            btn.disabled = false;
-        }
-    };
-
-    // --- SUPPORT LINKS ---
-    function initContactLinks() {
-        if (!db) return;
-        onValue(ref(db, 'support_links'), (snap) => {
-            const data = snap.val() || {};
-            const wa = data.whatsapp || '#';
-            const tgLogin = data.telegram_login || '#';
-            const tgDash = data.telegram_dashboard || '#';
-            document.getElementById('auth-wa-link').href = wa;
-            document.getElementById('auth-wa-link-2').href = wa;
-            document.getElementById('auth-tg-link').href = tgLogin;
-            document.getElementById('auth-tg-link-2').href = tgLogin;
-            const fab = document.getElementById('global-telegram-btn');
-            fab.href = tgDash;
-            fab.style.display = tgDash === '#' ? 'none' : 'flex';
-            document.getElementById('support-wa-btn').href = wa;
-            document.getElementById('support-tg-btn').href = tgDash !== '#' ? tgDash : tgLogin;
-        });
-    }
-
-    // --- BRANDING ---
-    function initBranding() {
-        if (!db) return;
-        onValue(ref(db, 'settings/branding'), (snap) => {
-            const data = snap.val();
-            if (data) {
-                if (data.name) {
-                    document.getElementById('site-name').innerText = data.name;
-                    document.title = data.name + " | PREMIUM";
-                }
-                if (data.logo && data.logo.length > 5) {
-                    const logo = document.getElementById('site-logo');
-                    logo.src = data.logo;
-                    logo.style.display = 'inline-block';
-                    const brandIcon = document.querySelector('.brand .brand-icon');
-                    if (brandIcon) brandIcon.style.display = 'none';
-                }
-            }
-        });
-    }
-
-    // --- DEPOSIT SETTINGS ---
-    function fetchDepositSettings() {
-        if (!db) return;
-        onValue(ref(db, 'settings/payment'), (snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                window.ZAP_KEY = data.zap_key || "";
-                document.getElementById('manual-upi-display').innerText = data.upiId || "Not Set";
-                const qrImg = document.getElementById('manual-qr-display');
-                const qrDl = document.getElementById('manual-qr-download');
-                if (data.qrImage) {
-                    qrImg.src = data.qrImage;
-                    qrImg.style.display = 'block';
-                    qrDl.href = data.qrImage;
-                    qrDl.style.display = 'inline-flex';
-                } else {
-                    qrImg.style.display = 'none';
-                    qrDl.style.display = 'none';
-                }
-            }
-        });
-        onValue(ref(db, 'deposit_settings'), (snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                document.getElementById('crypto-payid-display').innerText = data.binance_pay_id || "Not Set";
-                document.getElementById('crypto-address-display').innerText = data.usdt_address || "Not Set";
-                document.getElementById('crypto-rate').innerText = data.crypto_rate || "88.00";
-                const qrImg = document.getElementById('crypto-qr-display');
-                const qrDl = document.getElementById('crypto-qr-download');
-                if (data.crypto_qr) {
-                    qrImg.src = data.crypto_qr;
-                    qrImg.style.display = 'block';
-                    qrDl.href = data.crypto_qr;
-                    qrDl.style.display = 'inline-flex';
-                } else {
-                    qrImg.style.display = 'none';
-                    qrDl.style.display = 'none';
-                }
-            }
-        });
-    }
-
-    // --- PROMOTIONS ---
-    let autoScrollInterval;
-
-    function initPromotions() {
-        if (!db) return;
-        onValue(ref(db, 'promotions'), (snap) => {
-            const container = document.getElementById('promo-container');
-            const promos = [];
-            if (snap.exists()) snap.forEach(child => promos.push({ id: child.key, ...child.val() }));
-            const active = promos.filter(p => p.status === true || p.status === "true");
-            if (active.length === 0) { container.classList.add('hidden'); return; }
-            container.classList.remove('hidden');
-            container.innerHTML = '';
-            active.forEach(p => {
-                const link = p.link ? `onclick="window.open('${p.link}','_blank')"` : '';
-                const img = p.image ? `<img src="${p.image}" alt="${p.title}" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);background:var(--bg-input);\\'>No Image</div>'">` : '<div style="width:100%;height:100%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;color:var(--text-muted);">No Image</div>';
-                container.innerHTML += `
-                    <div class="promo-card" ${link}>
-                        ${img}
-                        <div class="promo-overlay"><div class="promo-title">${p.title || 'Promotion'}</div></div>
-                    </div>
-                `;
-            });
-            clearInterval(autoScrollInterval);
-            if (container.scrollWidth > container.clientWidth) {
-                let paused = false;
-                autoScrollInterval = setInterval(() => {
-                    if (paused) return;
-                    const card = container.querySelector('.promo-card');
-                    if (!card) return;
-                    const step = card.clientWidth + 16;
-                    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-                        container.scrollTo({ left: 0, behavior: 'smooth' });
-                    } else {
-                        container.scrollBy({ left: step, behavior: 'smooth' });
-                    }
-                }, 3500);
-                container.addEventListener('mouseenter', () => paused = true);
-                container.addEventListener('mouseleave', () => paused = false);
-                container.addEventListener('touchstart', () => paused = true, { passive: true });
-                container.addEventListener('touchend', () => setTimeout(() => paused = false, 2000), { passive: true });
-            }
-        });
-    }
-
-    // --- AUTH STATE ---
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUser = user;
-            authScreen.classList.add('hidden');
-            mainApp.style.display = 'block';
-            // Run security check before showing content
-            await performSecurityCheck();
-            initUserData();
-            fetchDepositSettings();
-            fetchPanels();
-            initPromotions();
-            navigate('home');
-            const pending = localStorage.getItem("pending_zap_order");
-            if (pending) setTimeout(() => startPaymentWatcher(pending), 2000);
-            hideLoader();
-        } else {
-            currentUser = null;
-            mainApp.style.display = 'none';
-            authScreen.classList.remove('hidden');
-            hideLoader();
-            if (paymentPollInterval) clearInterval(paymentPollInterval);
-            securityCompleted = false;
-            securityOverlay.classList.remove('active');
-        }
-    });
-
-    // --- AUTH ACTIONS ---
-    document.getElementById('btn-signup').addEventListener('click', async function() {
-        const email = document.getElementById('signup-email').value.trim();
-        const pass = document.getElementById('signup-pass').value;
-        const btn = this;
-        if (!email || pass.length < 6) return showToast("Invalid email or password (<6 chars)", "error");
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
-        btn.disabled = true;
-        showLoader();
-        try {
-            const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            await set(ref(db, `users/${cred.user.uid}`), { email, balance: 0, createdAt: serverTimestamp(), status: 'active' });
-            showToast("Account created!");
-        } catch (e) { showToast(e.message, "error"); } finally {
-            btn.innerHTML = `<span><i class="fas fa-user-plus"></i> Sign Up</span>`;
-            btn.disabled = false;
-            hideLoader();
-        }
-    });
-
-    document.getElementById('btn-login').addEventListener('click', async function() {
-        const email = document.getElementById('login-email').value.trim();
-        const pass = document.getElementById('login-pass').value;
-        const btn = this;
-        if (!email || !pass) return showToast("Enter email and password", "error");
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
-        btn.disabled = true;
-        showLoader();
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            showToast("Welcome back!");
-        } catch (e) { showToast("Invalid credentials", "error"); } finally {
-            btn.innerHTML = `<span><i class="fas fa-arrow-right"></i> Login</span>`;
-            btn.disabled = false;
-            hideLoader();
-        }
-    });
-
-    document.getElementById('btn-logout').addEventListener('click', async function() {
-        showLoader();
-        try { await signOut(auth);
-            document.getElementById('dropdown-menu').classList.remove('active'); } catch (e) { console.error(e); }
-        hideLoader();
-    });
-
-    // --- USER DATA ---
-    function initUserData() {
-        if (!db || !currentUser) return;
-        onValue(ref(db, `users/${currentUser.uid}`), (snap) => {
-            if (snap.exists()) {
-                userData = snap.val();
-                if (userData.status === "banned") { signOut(auth);
-                    alert("Account banned."); return; }
-                const bal = parseFloat(userData.balance || 0).toFixed(2);
-                document.getElementById('nav-balance').innerText = bal;
-                document.getElementById('prof-bal').innerText = `₹${bal}`;
-                document.getElementById('wallet-stat-bal').innerText = `₹${bal}`;
-                document.getElementById('prof-email').innerText = userData.email;
-                if (userData.createdAt) {
-                    document.getElementById('prof-date').innerText = new Date(userData.createdAt).toLocaleDateString();
-                }
-            }
-            hideLoader();
-        });
-        onValue(ref(db, `transactions/${currentUser.uid}`), (snap) => {
-            let totalDep = 0, todayDep = 0, pendingDep = 0, totalSpent = 0;
-            const today = new Date().toLocaleDateString();
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    const tx = child.val();
-                    const txDate = new Date(tx.date).toLocaleDateString();
-                    if (tx.type && tx.type.includes('deposit')) {
-                        if (tx.status === 'success') {
-                            totalDep += parseFloat(tx.amount) || 0;
-                            if (txDate === today) todayDep += parseFloat(tx.amount) || 0;
-                        } else if (tx.status === 'pending') pendingDep += parseFloat(tx.amount) || 0;
-                    }
-                    if (tx.status === 'success' && tx.type === 'purchase') {
-                        totalSpent += parseFloat(tx.amount) || 0;
-                    }
-                });
-            }
-            document.getElementById('wallet-stat-dep').innerText = `₹${totalDep.toFixed(2)}`;
-            document.getElementById('wallet-stat-today').innerText = `₹${todayDep.toFixed(2)}`;
-            document.getElementById('wallet-stat-pending').innerText = `₹${pendingDep.toFixed(2)}`;
-            document.getElementById('prof-spent').innerText = totalSpent.toFixed(2);
-        });
-    }
-
-    // --- NAVIGATION ---
-    window.navigate = (pageId) => {
-        document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
-        const target = document.getElementById(`page-${pageId}`);
-        if (target) target.classList.remove('hidden');
-        const dropdown = document.getElementById('dropdown-menu');
-        if (dropdown) dropdown.classList.remove('active');
-        if (pageId === 'history') fetchPurchases();
-        if (pageId === 'wallet') switchWalletTab('auto');
-        window.scrollTo(0, 0);
-    };
-
-    document.getElementById('menu-toggle').addEventListener('click', function() {
-        document.getElementById('dropdown-menu').classList.toggle('active');
-    });
-
-    // --- FETCH PANELS ---
-    function fetchPanels() {
-        if (!db) return;
-        onValue(ref(db, 'panels'), (snap) => {
-            const container = document.getElementById('panels-container');
-            container.innerHTML = '';
-            if (!snap.exists()) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>No panels available.</p></div>`;
-                return;
-            }
-            snap.forEach(child => {
-                const p = child.val();
-                if (!p || p.status !== 'active') return;
-                const panelId = child.key;
-                const desc = p.description || 'Premium tool';
-                const features = desc.split(/\n|-/).filter(f => f && f.trim().length > 0);
-                const featuresHtml = features.map(f => `<span class="chip"><i class="fas fa-bolt"></i> ${f.trim()}</span>`).join('');
-                const updateLink = p.link ? `window.open('${p.link}','_blank')` : "showToast('File link not available','warning')";
-                const feedbackBtn = p.feedback && p.feedback.trim() ?
-                    `<button class="btn-outline feedback" onclick="window.open('${p.feedback}','_blank')"><i class="fas fa-star"></i> Feedback</button>` : '';
-
-                let plansHtml = '';
-                if (p.plans && Object.keys(p.plans).length > 0) {
-                    const sorted = Object.entries(p.plans).sort((a, b) => (a[1].price || 0) - (b[1].price || 0));
-                    plansHtml = `<select class="plan-select" id="plan-${panelId}">`;
-                    sorted.forEach(([key, data]) => {
-                        const label = data.label || `${data.days || ''} Days`;
-                        plansHtml += `<option value='${JSON.stringify({ key, label, price: data.price || 0 })}'>${label} - ₹${data.price || 0}</option>`;
-                    });
-                    plansHtml += `</select>`;
-                } else {
-                    plansHtml = `<p style="color:var(--text-muted);font-size:13px;text-align:center;margin:8px 0;">Pricing unavailable</p>`;
-                }
-
-                const ytID = extractYouTubeID(p.youtube);
-                const videoHtml = ytID ?
-                    `<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytID}?autoplay=1&mute=1&rel=0&modestbranding=1" allowfullscreen></iframe></div>` :
-                    `<div class="video-wrap"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-input);color:var(--text-muted);"><i class="fas fa-video-slash" style="font-size:28px;margin-bottom:8px;"></i><span style="font-weight:600;font-size:13px;">No Video</span></div></div>`;
-
-                const card = document.createElement('div');
-                card.className = 'panel-card';
-                const searchText = `${p.name || ''} ${desc}`.toLowerCase();
-                card.setAttribute('data-search', searchText);
-                const panelName = (p.name || 'Panel').replace(/'/g, "\\'");
-                card.innerHTML = `
-                    ${videoHtml}
-                    <div class="panel-body">
-                        <div class="panel-name">${p.name || 'Panel'}</div>
-                        <div class="feature-list">${featuresHtml}</div>
-                        <div class="trust-row">
-                            <span class="trust-item"><i class="fas fa-shield-alt"></i> Safe Payment</span>
-                            <span class="trust-item"><i class="fas fa-medal"></i> Verified</span>
-                        </div>
-                        <div class="btn-row">
-                            <button class="btn-outline" onclick="${updateLink}"><i class="fas fa-file-download"></i> Update</button>
-                            ${feedbackBtn}
-                        </div>
-                        ${plansHtml}
-                        <button class="btn-primary-solid" onclick="handlePurchaseClick('${panelId}','${panelName}','${p.link || ''}')" style="width:100%;">
-                            <i class="fas fa-shopping-cart"></i> Purchase Key
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.dispatchEvent(new Event('input'));
-        });
-    }
-
-    // --- SEARCH ---
-    let searchTimeout;
-    document.getElementById('search-input').addEventListener('input', function(e) {
-        const icon = document.querySelector('.search-box .search-icon');
-        const loader = document.querySelector('.search-box .search-spinner');
-        if (icon) icon.style.display = 'none';
-        if (loader) loader.style.display = 'block';
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            const term = e.target.value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.panel-card');
-            let visible = 0;
-            cards.forEach(c => {
-                const searchData = c.getAttribute('data-search') || '';
-                if (searchData.includes(term)) {
-                    c.style.display = 'flex';
-                    visible++;
-                } else {
-                    c.style.display = 'none';
-                }
-            });
-            const empty = document.getElementById('search-empty');
-            if (empty) {
-                empty.classList.toggle('hidden', visible > 0 || cards.length === 0);
-            }
-            if (loader) loader.style.display = 'none';
-            if (icon) icon.style.display = 'block';
-        }, 300);
-    });
+    setInterval(async()=>{const id=localStorage.getItem('pending_deposit_id'); if(id && currentUser) {const r=await checkDeposit(id); if(r?.status==='success'||r?.status==='approved') localStorage.removeItem('pending_deposit_id');}},7000);
 
     // --- CHECKOUT ---
     window.currentCheckout = {};
@@ -2932,92 +2431,135 @@
         const checkout = window.currentCheckout;
         const price = checkout.finalPrice || 0;
         const btn = document.getElementById('btn-confirm-pay');
-        const balance = parseFloat(userData.balance || 0);
-        if (balance < price) return showToast(`Insufficient balance. Need ₹${price.toFixed(2)}`, "error");
-        showLoader();
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+        if (!currentUser) return showToast('Please login first', 'error');
+        showLoader(); btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Creating payment...`;
         try {
-            const result = await runTransaction(ref(db, `users/${currentUser.uid}/balance`), (bal) => {
-                if (bal === null) return 0;
-                if (bal >= price) return bal - price;
-                return undefined;
+            const order = await backendFetch('/api/orders', {
+                method: 'POST',
+                body: JSON.stringify({
+                    productId: checkout.panelId,
+                    planKey: checkout.planKey,
+                    amount: price,
+                    couponId: window.appliedCoupon?.id || null
+                })
             });
-            if (result.committed) {
-                const newKey = generateKey(12);
-                const txId = "PUR" + Date.now();
-                await set(push(ref(db, `purchases/${currentUser.uid}`)), {
-                    panelId: checkout.panelId || '',
-                    panelName: checkout.panelName || 'Panel',
-                    plan: checkout.planKey || '',
-                    label: checkout.label || 'Plan',
-                    price: price,
-                    key: newKey,
-                    link: checkout.link || '',
-                    date: new Date().toISOString()
-                });
-                await set(ref(db, `transactions/${currentUser.uid}/${txId}`), {
-                    id: txId, type: "purchase", amount: price, status: "success",
-                    desc: `Purchased ${checkout.panelName || 'Panel'}`, date: new Date().toISOString()
-                });
-                if (window.appliedCoupon && window.appliedCoupon.id) {
-                    await runTransaction(ref(db, `coupons/${window.appliedCoupon.id}/used`), (curr) => (curr || 0) + 1);
-                }
-                closeModal('modal-checkout');
-                document.getElementById('modal-key-display').innerText = newKey;
-                document.getElementById('modal-btn-access').onclick = () => window.open(checkout.link || "https://t.me/", '_blank');
-                openModal('modal-success');
-            } else {
-                showToast("Transaction failed. Insufficient funds.", "error");
+            if (order.redirect_url) {
+                window.location.href = order.redirect_url;
+                return;
             }
-        } catch (e) { showToast("System error. Try again.", "error"); } finally {
-            hideLoader();
-            btn.disabled = false;
-            btn.innerHTML = `Confirm Pay`;
-        }
+            if (order.status === 'paid' && order.key) {
+                showToast('Payment verified and key generated!', 'success');
+                closeModal('modal-checkout');
+                window.location.reload();
+                return;
+            }
+            showToast('Payment order created. Complete payment to receive your key.', 'success');
+            closeModal('modal-checkout');
+            if (order.order_id) localStorage.setItem('pending_order_id', order.order_id);
+        } catch (e) {
+            console.error(e); showToast(e.message || 'Payment/order error', 'error');
+        } finally { hideLoader(); btn.disabled = false; btn.innerHTML = 'Confirm Pay'; }
     };
 
-    // --- HISTORY ---
-    function fetchPurchases() {
+    async function checkPendingOrder() {
+        const orderId = localStorage.getItem('pending_order_id');
+        if (!orderId || !currentUser) return;
+        try {
+            const r = await backendFetch('/api/orders/' + encodeURIComponent(orderId));
+            if (r.status === 'paid' && r.key) {
+                localStorage.removeItem('pending_order_id');
+                showToast('Payment verified — your key is ready.', 'success');
+                if (typeof fetchKeys === 'function') fetchKeys();
+            } else if (['failed','cancelled'].includes(r.status)) {
+                localStorage.removeItem('pending_order_id');
+            }
+        } catch (_) {}
+    }
+    setInterval(checkPendingOrder, 7000);
+    setTimeout(checkPendingOrder, 2500);
+
+    // --- HISTORY / KEYS (reads from orders, only approved orders with a delivered key) ---
+    function fetchKeys() {
         if (!db || !currentUser) return;
         showLoader();
-        get(ref(db, `purchases/${currentUser.uid}`)).then(snap => {
-            const container = document.getElementById('history-container');
-            container.innerHTML = '';
+        const container = document.getElementById('history-container');
+        container.innerHTML = '';
+        get(ref(db, 'orders/' + currentUser.uid)).then(snap => {
             if (!snap.exists()) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-key"></i><p>No keys purchased yet.</p></div>`;
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-key"></i><p>No keys available yet. Place an order and wait for approval.</p></div>';
                 document.getElementById('prof-purchases').innerText = '0';
-            } else {
-                const items = [];
-                snap.forEach(child => items.push({ id: child.key, ...child.val() }));
-                items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-                document.getElementById('prof-purchases').innerText = items.length;
-                items.forEach(p => {
-                    const dateStr = p.date ? new Date(p.date).toLocaleString() : 'N/A';
-                    const label = p.label || (p.days ? `${p.days} Days` : 'Premium Access');
-                    const card = document.createElement('div');
-                    card.className = 'history-card';
-                    const keyId = `hist-key-${p.id || Date.now()}`;
-                    card.innerHTML = `
-                        <div class="hdr">
-                            <h4>${p.panelName || 'Panel'}</h4>
-                            <span class="price-tag">₹${(p.price || 0).toFixed(2)}</span>
-                        </div>
-                        <div class="meta"><i class="fas fa-tag"></i> ${label} &middot; ${dateStr}</div>
-                        <div class="key-box">
-                            <span class="key-text" id="${keyId}">${p.key || 'N/A'}</span>
-                            <button class="copy-key" onclick="copyToClipboard('${keyId}','License Key')"><i class="fas fa-copy"></i> Copy</button>
-                        </div>
-                        <button class="btn-outline" style="width:100%;justify-content:center;border-color:var(--accent-blue);color:var(--accent-blue);" onclick="window.open('${p.link || ''}','_blank')">
-                            <i class="fas fa-download"></i> Access Files
-                        </button>
-                    `;
-                    container.appendChild(card);
-                });
+                hideLoader(); return;
             }
+            const items = [];
+            snap.forEach(c => { const o = c.val(); if (o.status === 'approved' && o.key) items.push({ id: c.key, ...o }); });
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-key"></i><p>No approved keys yet. Your order is pending admin approval — please check back soon.</p></div>';
+                document.getElementById('prof-purchases').innerText = '0';
+                hideLoader(); return;
+            }
+            items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            document.getElementById('prof-purchases').innerText = items.length;
+            items.forEach(o => {
+                const dateStr = o.date ? new Date(o.date).toLocaleString() : 'N/A';
+                const label = o.label || 'Premium Access';
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                const keyId = 'hist-key-' + (o.id || Date.now());
+                const actualKey = o.key || 'N/A';
+                const masked = '••••••••••••';
+
+                const dl = o.downloadLink || o.link || '';
+                let dlHtml = '';
+                if (dl) {
+                    const dlId = 'hist-dl-' + (o.id || Date.now());
+                    dlHtml = `
+                        <div class="download-link-box">
+                            <span class="dl-label"><i class="fas fa-download"></i> Download</span>
+                            <span class="dl-url" id="${dlId}">${dl.length > 40 ? dl.slice(0,40)+'…' : dl}</span>
+                            <div class="dl-actions">
+                                <button class="access-link" onclick="window.open('${dl}','_blank')"><i class="fas fa-external-link-alt"></i> Access</button>
+                                <button class="copy-link" onclick="copyToClipboard('${dlId}','Download Link')"><i class="fas fa-copy"></i> Copy</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    dlHtml = '<div class="download-link-box"><span class="no-link"><i class="fas fa-info-circle"></i> No download link</span></div>';
+                }
+
+                card.innerHTML =
+                    '<div class="hdr"><h4>' + (o.panelName || 'Panel') +
+                    '</h4><span class="price-tag">₹' + (o.price || 0).toFixed(2) +
+                    '</span></div><div class="meta"><i class="fas fa-tag"></i> ' + label +
+                    ' &middot; ' + dateStr +
+                    '</div><div class="key-box"><span class="key-text masked" data-key="' + actualKey +
+                    '" id="' + keyId + '">' + masked +
+                    '</span><div class="key-actions"><button class="reveal-key" data-target="' + keyId +
+                    '"><i class="fas fa-eye"></i> Reveal</button><button class="copy-key" onclick="copyToClipboard(\'' +
+                    keyId + '\',\'License Key\')"><i class="fas fa-copy"></i> Copy</button></div></div>' +
+                    dlHtml;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.reveal-key').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const span = document.getElementById(targetId);
+                    if (!span) return;
+                    const isMasked = span.classList.contains('masked');
+                    if (isMasked) {
+                        span.innerText = span.dataset.key;
+                        span.classList.remove('masked');
+                        this.innerHTML = '<i class="fas fa-eye-slash"></i> Hide';
+                    } else {
+                        span.innerText = '••••••••••••';
+                        span.classList.add('masked');
+                        this.innerHTML = '<i class="fas fa-eye"></i> Reveal';
+                    }
+                });
+            });
             hideLoader();
         }).catch(() => { hideLoader();
-            showToast("Failed to load history", "error"); });
+            showToast('Failed to load keys', 'error'); });
     }
 
     // --- INIT ---
