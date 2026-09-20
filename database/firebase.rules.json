@@ -2,41 +2,41 @@
   "rules": {
     "panels": {
       ".read": true,
-      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+      ".write": "auth != null && auth.token.email == ' yadipvasava@gmail.com'"
     },
     "promotions": {
       ".read": true,
-      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+      ".write": "auth != null && auth.token.email == ' yadipvasava@gmail.com'"
     },
     "coupons": {
       ".read": "auth != null",
-      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+      ".write": "auth != null && auth.token.email == ' yadipvasava@gmail.com'"
     },
     "users": {
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')",
-        ".write": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')"
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email == ' yadipvasava@gmail.com')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email == ' yadipvasava@gmail.com')"
       }
     },
     "orders": {
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')",
-        ".write": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')"
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email == ' yadipvasava@gmail.com')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email == ' yadipvasava@gmail.com')"
       }
     },
     "transactions": {
       "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')",
-        ".write": "auth != null && (auth.uid === $uid || auth.token.email == 'YOUR_ADMIN_EMAIL')"
+        ".read": "auth != null && (auth.uid === $uid || auth.token.email == ' yadipvasava@gmail.com')",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.email == ' yadipvasava@gmail.com')"
       }
     },
     "gateway_payments": {
-      ".read": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'",
-      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+      ".read": "auth != null && auth.token.email == ' yadipvasava@gmail.com'",
+      ".write": "auth != null && auth.token.email == ' yadipvasava@gmail.com'"
     },
     "settings": {
       ".read": true,
-      ".write": "auth != null && auth.token.email == 'YOUR_ADMIN_EMAIL'"
+      ".write": "auth != null && auth.token.email == ' yadipvasava@gmail.com'"
     }
   }
 }
