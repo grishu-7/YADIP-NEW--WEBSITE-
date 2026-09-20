@@ -970,7 +970,23 @@
         <section class="page-section hidden" id="sec-settings">
           <div class="dashboard-grid">
             <div class="section-box"><div class="box-header"><h3><i class="fas fa-bolt" style="color:var(--red);margin-right:8px;"></i> Gateway & UPI</h3></div>
-              <div class="form-group"><label>FamGateway Payment</label><input class="form-input" value="Configured from Advanced Integrations → FamGateway" disabled /></div>
+              <div style="padding:16px;border:1px solid var(--border);border-radius:14px;margin-bottom:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                  <h4 style="margin:0;"><i class="fas fa-bolt" style="color:var(--red);margin-right:8px;"></i> FamGateway Payment</h4>
+                  <span id="fampay-config-status" style="font-size:12px;color:var(--text-secondary);">Checking configuration…</span>
+                </div>
+                <p style="font-size:12px;color:var(--text-secondary);margin:8px 0 14px;">Direct admin controls. Values are saved to the protected backend; API keys are not placed in the frontend source.</p>
+                <div class="form-group"><label>Create Order URL</label><input id="set-fampay-create-url" class="form-input" placeholder="https://famgateway.in/api/create-order"></div>
+                <div class="form-group"><label>Verify Order URL</label><input id="set-fampay-verify-url" class="form-input" placeholder="https://famgateway.in/api/verify-order.php"></div>
+                <div class="form-group"><label>API Key</label><div style="display:flex;gap:8px;"><input id="set-fampay-api-key" type="password" class="form-input" autocomplete="new-password" placeholder="Paste FamGateway API key"><button type="button" class="btn btn-outline btn-sm" id="btn-toggle-fampay-key" title="Show/Hide"><i class="fas fa-eye"></i></button></div></div>
+                <div class="form-group"><label>Merchant ID</label><input id="set-fampay-merchant-id" class="form-input" placeholder="Optional"></div>
+                <div class="form-group"><label>Redirect / Success URL</label><input id="set-fampay-callback-url" class="form-input" placeholder="https://your-domain/?payment=success"></div>
+                <div class="form-group"><label>Webhook URL</label><input id="set-fampay-webhook-url" class="form-input" placeholder="https://your-domain/api/payment/webhook"></div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <button type="button" class="btn btn-outline" id="btn-test-fampay-settings"><i class="fas fa-plug"></i> Check Gateway Config</button>
+                  <button type="button" class="btn btn-outline" id="btn-copy-fampay-status"><i class="fas fa-copy"></i> Copy Status</button>
+                </div>
+              </div>
               <div style="border-top:1px dashed var(--border);margin:20px 0;"></div>
               <div class="form-group"><label>Manual UPI ID</label><input id="set-upi" class="form-input" placeholder="yourname@upi" /></div>
               <div class="form-group"><label>Manual QR URL</label><input id="set-qr" class="form-input" placeholder="https://…" /></div>
@@ -1433,6 +1449,24 @@
       const payData = pay.val() || {};
       const depData = dep.val() || {};
       document.getElementById('set-upi').value = payData.upiId || depData.upi_id || '';
+      // Load protected FamGateway settings separately through the authenticated backend.
+      try {
+        const s = await backendAdmin('/api/admin/settings');
+        const v = s.settings || {};
+        const setv = (id, key) => { const el = document.getElementById(id); if (el) el.value = v[key] || ''; };
+        setv('set-fampay-create-url', 'paymentApiUrl');
+        setv('set-fampay-verify-url', 'paymentVerifyUrl');
+        setv('set-fampay-api-key', 'paymentApiKey');
+        setv('set-fampay-merchant-id', 'merchantId');
+        setv('set-fampay-callback-url', 'callbackUrl');
+        setv('set-fampay-webhook-url', 'paymentWebhookUrl');
+        const configured = !!(v.paymentApiKey && v.paymentApiUrl);
+        const status = document.getElementById('fampay-config-status');
+        if (status) { status.textContent = configured ? 'Configured' : 'Not configured'; status.style.color = configured ? 'var(--green)' : 'var(--red)'; }
+      } catch (e) {
+        const status = document.getElementById('fampay-config-status');
+        if (status) { status.textContent = 'Backend unavailable'; status.style.color = 'var(--red)'; }
+      }
       document.getElementById('set-qr').value = payData.qrImage || depData.upi_qr || '';
       document.getElementById('qr-preview').innerHTML = (payData.qrImage || depData.upi_qr) ? `<img src="${payData.qrImage || depData.upi_qr}" style="max-width:160px;border-radius:12px;border:1px solid var(--border);margin-top:8px;">` : '';
       document.getElementById('set-crypto-payid').value = depData.binance_pay_id || '';
@@ -1615,13 +1649,22 @@
       if (videoUrl && !/^https?:\/\//i.test(videoUrl)) return showToast('Invalid video URL', 'error');
       const plansData = {};
       let ok = false;
+      const seenPlanLabels = new Set();
       document.querySelectorAll('#edit-plans-container .plan-row').forEach((row, i) => {
         const lbl = row.querySelector('.p-label').value.trim();
         const price = parseFloat(row.querySelector('.p-price').value);
         const keys = parseInt(row.querySelector('.p-keys').value) || 1;
-        const duration = row.querySelector('.p-duration')?.value.trim() || ''; if (lbl && !isNaN(price) && duration) { plansData[`plan_${i}`] = { label: lbl, price, keys, durationString: duration, resellerDurationString: duration }; ok = true; }
+        const duration = row.querySelector('.p-duration')?.value.trim() || '';
+        const duplicate = lbl && seenPlanLabels.has(lbl.toLowerCase());
+        if (lbl) seenPlanLabels.add(lbl.toLowerCase());
+        if (duplicate) { ok = false; return; }
+        if (lbl && Number.isFinite(price) && price >= 0 && duration) {
+          plansData[`plan_${i}`] = { label: lbl, price, keys, durationString: duration, resellerDurationString: duration };
+          ok = true;
+        }
       });
       if (!ok) return showToast('Add at least one valid plan with Reseller Duration String', 'error');
+      if (Object.keys(plansData).length !== document.querySelectorAll('#edit-plans-container .plan-row').length) return showToast('Every pricing plan needs Name, Price and its own Reseller Duration String', 'error');
       showLoader();
       try { await update(ref(db, `panels/${id}`), { name: document.getElementById('edit-p-name').value, logo: document.getElementById('edit-p-logo').value, category: document.getElementById('edit-p-category').value, videoUrl: videoUrl, pid: document.getElementById('edit-p-pid').value.trim(), androidId: document.getElementById('edit-p-android-id').value.trim(), link: document.getElementById('edit-p-link').value, feedback: document.getElementById('edit-p-feedback').value, description: document.getElementById('edit-p-desc').value, plans: plansData }); showToast('Updated'); closeModal('modal-edit-panel'); loadSection('manage-panels'); } catch (e) { showToast('Error', 'error'); hideLoader(); }
     };
@@ -1668,13 +1711,22 @@
       if (videoUrl && !/^https?:\/\//i.test(videoUrl)) return showToast('Invalid video URL', 'error');
       const plansData = {};
       let ok = false;
+      const seenPlanLabels = new Set();
       document.querySelectorAll('#plans-container .plan-row').forEach((row, i) => {
         const lbl = row.querySelector('.p-label').value.trim();
         const price = parseFloat(row.querySelector('.p-price').value);
         const keys = parseInt(row.querySelector('.p-keys').value) || 1;
-        const duration = row.querySelector('.p-duration')?.value.trim() || ''; if (lbl && !isNaN(price) && duration) { plansData[`plan_${i}`] = { label: lbl, price, keys, durationString: duration, resellerDurationString: duration }; ok = true; }
+        const duration = row.querySelector('.p-duration')?.value.trim() || '';
+        const duplicate = lbl && seenPlanLabels.has(lbl.toLowerCase());
+        if (lbl) seenPlanLabels.add(lbl.toLowerCase());
+        if (duplicate) { ok = false; return; }
+        if (lbl && Number.isFinite(price) && price >= 0 && duration) {
+          plansData[`plan_${i}`] = { label: lbl, price, keys, durationString: duration, resellerDurationString: duration };
+          ok = true;
+        }
       });
-      if (!ok) return showToast('Add at least one valid plan with Reseller Duration String', 'error');
+      if (!ok) return showToast('Add at least one valid plan with a unique Reseller Duration String', 'error');
+      if (Object.keys(plansData).length !== document.querySelectorAll('#plans-container .plan-row').length) return showToast('Every pricing plan needs Name, Price and its own Reseller Duration String', 'error');
       showLoader();
       try {
         await push(ref(db, 'panels'), { name, logo, category, videoUrl, pid, androidId: document.getElementById('add-p-android-id').value.trim(), link, feedback, description: desc, status: 'active', plans: plansData, featured:false, badge:'' });
@@ -1744,6 +1796,28 @@
     window.toggleCoupon = async (id, status) => { showLoader(); try { await update(ref(db, `coupons/${id}`), { status: !status }); showToast(!status ? 'Activated' : 'Disabled'); loadSection('coupons'); } catch (e) { showToast('Error', 'error'); hideLoader(); } };
     window.deleteCoupon = async (id) => { if (confirm('Delete coupon?')) { showLoader(); try { await remove(ref(db, `coupons/${id}`)); showToast('Deleted'); loadSection('coupons'); } catch (e) { showToast('Error', 'error'); hideLoader(); } } };
 
+    document.getElementById('btn-toggle-fampay-key')?.addEventListener('click', () => {
+      const input = document.getElementById('set-fampay-api-key');
+      if (!input) return;
+      input.type = input.type === 'password' ? 'text' : 'password';
+      document.getElementById('btn-toggle-fampay-key').innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+    document.getElementById('btn-test-fampay-settings')?.addEventListener('click', async () => {
+      try {
+        showLoader();
+        const r = await backendAdmin('/api/admin/test/payment', {method:'POST'});
+        showToast(r.message || 'FamGateway configuration is valid');
+        const status = document.getElementById('fampay-config-status');
+        if (status) { status.textContent = 'Configured'; status.style.color = 'var(--green)'; }
+      } catch (e) { showToast(e.message, 'error'); }
+      finally { hideLoader(); }
+    });
+    document.getElementById('btn-copy-fampay-status')?.addEventListener('click', async () => {
+      const status = document.getElementById('fampay-config-status')?.textContent || 'Unknown';
+      try { await navigator.clipboard.writeText('FamGateway: ' + status); showToast('Status copied'); }
+      catch (e) { showToast('Clipboard permission denied', 'error'); }
+    });
+
     // --- Settings Save ---
     document.getElementById('btn-save-settings').onclick = async () => {
       showLoader();
@@ -1758,7 +1832,18 @@
           crypto_rate: document.getElementById('set-crypto-rate').value.trim(),
           crypto_qr: document.getElementById('set-crypto-qr').value.trim()
         });
-        showToast('Payment settings saved');
+        await backendAdmin('/api/admin/settings', {
+          method: 'PUT',
+          body: JSON.stringify({
+            paymentApiUrl: document.getElementById('set-fampay-create-url').value.trim(),
+            paymentVerifyUrl: document.getElementById('set-fampay-verify-url').value.trim(),
+            paymentApiKey: document.getElementById('set-fampay-api-key').value,
+            merchantId: document.getElementById('set-fampay-merchant-id').value.trim(),
+            callbackUrl: document.getElementById('set-fampay-callback-url').value.trim(),
+            paymentWebhookUrl: document.getElementById('set-fampay-webhook-url').value.trim()
+          })
+        });
+        showToast('Payment + FamGateway settings saved');
       } catch (e) { showToast('Error saving', 'error'); }
       hideLoader();
     };
